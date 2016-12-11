@@ -1,0 +1,26 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+  timeout: 5000
+
+development:
+  <<: *default
+  database: quire-api_dev
+  username: jafethdc
+  password: jafethdc
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  <<: *default
+  database: quire-api_test
+  username: jafethdc
+  password: jafethdc
+
+production:
+  <<: *default
+  database: quire-api
+  username: idk
+  password: idk
