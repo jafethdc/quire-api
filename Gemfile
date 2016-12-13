@@ -24,7 +24,12 @@ gem 'puma', '~> 3.0'
 # API gems
 gem 'active_model_serializers'
 
-gem 'devise'
+# Postgis adapter for rails
+# It's necessary to have postgis previously installed
+gem 'activerecord-postgis-adapter'
+
+# Facebook Graph API client
+gem 'koala', '~> 2.2'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
