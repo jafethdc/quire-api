@@ -11,10 +11,16 @@ RSpec.describe User, type: :model do
 
 #  it { is_expected.to be_valid }
 
-=begin
+  it { is_expected.to validate_presence_of(:username) }
+  it { is_expected.to validate_uniqueness_of(:username) }
+
+  it { is_expected.to validate_presence_of(:full_name) }
+
   it { is_expected.to validate_presence_of(:email) }
   it { is_expected.to validate_uniqueness_of(:email).case_insensitive }
   it { is_expected.to allow_value('example@domain.com').for(:email) }
-=end
+  it { is_expected.not_to allow_value('examplexdomain.com').for(:email) }
+
+
 end
 
