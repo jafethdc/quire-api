@@ -6,7 +6,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
       @test_fb_users = Koala::Facebook::TestUsers.new(  app_id: 731044283720945,
                                                         secret: 'e32e3bf7859a0208b68412775c823028')
       @test_fb_user = @test_fb_users.create(true, ['email'])
-      @user = User.create(FactoryGirl.attributes_for(:user).merge(email: @test_fb_user['email']))
+      @user = User.create(FactoryGirl.attributes_for(:user, email: @test_fb_user['email']))
     end
 
     context 'when successfully created' do

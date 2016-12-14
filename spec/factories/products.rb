@@ -1,7 +1,8 @@
 FactoryGirl.define do
   factory :product do
-    name "MyString"
-    description "MyText"
-    price "9.99"
+    name { FFaker::Name.name }
+    description { FFaker::Lorem.paragraph }
+    price { rand(0..500) }
+    association :seller, factory: :user
   end
 end

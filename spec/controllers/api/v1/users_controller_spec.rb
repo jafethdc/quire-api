@@ -11,7 +11,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     context 'when is successfully created' do
       before(:all) do
         @test_fb_user = @test_fb_users.create(true, ['email'])
-        @user_attributes = FactoryGirl.attributes_for(:user).merge(email: @test_fb_user['email'])
+        @user_attributes = FactoryGirl.attributes_for(:user, email: @test_fb_user['email'])
       end
 
       before(:each) do

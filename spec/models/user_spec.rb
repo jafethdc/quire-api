@@ -9,7 +9,7 @@ RSpec.describe User, type: :model do
   it { is_expected.to respond_to(:last_known_location) }
   it { is_expected.to respond_to(:access_token) }
 
-#  it { is_expected.to be_valid }
+  it { is_expected.to be_valid }
 
   it { is_expected.to validate_presence_of(:username) }
   it { is_expected.to validate_uniqueness_of(:username) }
