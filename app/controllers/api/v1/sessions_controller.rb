@@ -18,7 +18,7 @@ module Api
           end
         else
           render json: { errors: [fb_validation_result[:error_message]] }, status: 422
-          end
+        end
       end
 
       def destroy
