@@ -1,24 +1,21 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::ProductsController, type: :controller do
-  let(:seller) { FactoryGirl.create(:user, access_token: SecureRandom.base58(24)) }
+  let(:seller) { FactoryGirl.create(:logged_user)  }
 
   describe 'GET #index' do
-
     context 'when there is no products' do
       it 'returns an empty array' do
         get :index, params: { user_id: seller.id }
-        products_response = JSON.parse(response.body, symbolize_names: true)
-        expect(products_response.size).to eq(0)
+        expect(json_response.size).to eq(0)
       end
     end
 
     context 'when there is 5 products' do
       it 'returns an empty array' do
-        5.times { FactoryGirl.create(:product, seller_id: seller.id) }
+        FactoryGirl.create_list(:product, 5, seller_id: seller.id)
         get :index, params: { user_id: seller.id }
-        products_response = JSON.parse(response.body, symbolize_names: true)
-        expect(products_response.size).to eq(5)
+        expect(json_response.size).to eq(5)
       end
     end
 
@@ -51,19 +48,19 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
 
     context 'when product images are provided' do
       let(:product_attributes) do
-        product_image_attributes = 5.times.map { FactoryGirl.attributes_for(:product_image).except(:product_id) }
+        product_image_attributes = FactoryGirl.attributes_for_list(:product_image,5)
         FactoryGirl.attributes_for(:product, product_images_attributes: product_image_attributes)
       end
 
       it 'creates 5 new product images' do
         count_before = ProductImage.count
-        request.headers['Authorization'] = seller.access_token
+        api_authorization_header(seller.access_token)
         post :create, params: { user_id: seller.id, product: product_attributes }
         expect(ProductImage.count).to eq(count_before+5)
       end
 
       it 'returns 201' do
-        request.headers['Authorization'] = seller.access_token
+        api_authorization_header(seller.access_token)
         post :create, params: { user_id: seller.id, product: product_attributes }
         is_expected.to respond_with 201
       end
@@ -73,14 +70,13 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
       let(:product_attributes) { FactoryGirl.attributes_for(:product).except(:description) }
 
       it 'returns an errors array with only one message' do
-        request.headers['Authorization'] = seller.access_token
+        api_authorization_header(seller.access_token)
         post :create, params: { user_id: seller.id, product: product_attributes }
-        product_response = JSON.parse(response.body, symbolize_names: true)
-        expect(product_response[:errors].size).to eq(1)
+        expect(json_response[:errors].size).to eq(1)
       end
 
       it 'returns 422' do
-        request.headers['Authorization'] = seller.access_token
+        api_authorization_header(seller.access_token)
         post :create, params: { user_id: seller.id, product: product_attributes }
         is_expected.to respond_with 422
       end
@@ -90,11 +86,31 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
       let(:product_attributes) { FactoryGirl.attributes_for(:product) }
 
       it 'returns a product owned by the corresponding seller' do
-        request.headers['Authorization'] = seller.access_token
+        api_authorization_header(seller.access_token)
         post :create, params: { user_id: seller.id, product: product_attributes }
-        product_response = JSON.parse(response.body, symbolize_names: true)
-        expect(product_response[:seller_id]).to eq(seller.id)
+        expect(json_response[:seller_id]).to eq(seller.id)
       end
+    end
+
+    # The following two could be refactored...
+    context 'when no authentication header is provided' do
+      let(:product_attributes) { FactoryGirl.attributes_for(:product) }
+
+      it 'returns 404' do
+        post :create, params: { user_id: seller.id, product: product_attributes }
+        is_expected.to respond_with 404
+      end
+    end
+
+    context 'when invalid authentication header is provided' do
+      let(:product_attributes) { FactoryGirl.attributes_for(:product) }
+
+      it 'returns 404' do
+        api_authorization_header('holajejeje')
+        post :create, params: { user_id: seller.id, product: product_attributes }
+        is_expected.to respond_with 404
+      end
+
     end
   end
 
@@ -103,14 +119,14 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
 
     context 'when is successfully updated' do
       it 'changes only the specified fields' do
-        request.headers['Authorization'] = seller.access_token
+        api_authorization_header(seller.access_token)
         patch :update, params: { user_id: seller.id, id: old_product.id, product: { title: 'producto1' } }
-        product_response = JSON.parse(response.body, symbolize_names: true)
-        expect(product_response).not_to eq(old_product.attributes)
+        # Be more specific
+        expect(json_response).not_to eq(old_product.attributes)
       end
 
       it 'returns 200' do
-        request.headers['Authorization'] = seller.access_token
+        api_authorization_header(seller.access_token)
         patch :update, params: { user_id: seller.id, id: old_product.id, product: { title: 'producto1' } }
         is_expected.to respond_with 200
       end
@@ -122,7 +138,7 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
 
     context 'when is successfully destroyed' do
       it 'returns 204' do
-        request.headers['Authorization'] = seller.access_token
+        api_authorization_header(seller.access_token)
         delete :destroy, params: { user_id: seller.id, id: old_product.id }
         is_expected.to respond_with 204
       end
@@ -130,9 +146,9 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
 
     context 'when the product had many images' do
       it 'deletes all the associated images' do
-        5.times { FactoryGirl.create(:product_image, product_id: old_product.id) }
+        FactoryGirl.create_list(:product_image, 5, product_id: old_product.id)
         before_delete_count = ProductImage.count
-        request.headers['Authorization'] = seller.access_token
+        api_authorization_header(seller.access_token)
         delete :destroy, params: { user_id: seller.id, id: old_product.id }
         expect(ProductImage.count).to eq(before_delete_count-5)
       end

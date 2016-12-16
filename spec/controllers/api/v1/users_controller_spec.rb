@@ -19,8 +19,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
 
       it 'renders the json representation for the user record just created' do
-        user_response = JSON.parse(response.body, symbolize_names: true)
-        expect(user_response[:email]).to eql @user_attributes[:email]
+        expect(json_response[:email]).to eql @user_attributes[:email]
       end
 
       it { is_expected.to respond_with 201 }
@@ -42,8 +41,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
 
       it 'renders an errors json' do
-        user_response = JSON.parse(response.body, symbolize_names: true)
-        expect(user_response).to have_key(:errors)
+        expect(json_response).to have_key(:errors)
       end
 
       it { is_expected.to respond_with 422 }
@@ -56,8 +54,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
 
       it 'renders an errors json' do
-        user_response = JSON.parse(response.body, symbolize_names: true)
-        expect(user_response).to have_key(:errors)
+        expect(json_response).to have_key(:errors)
       end
     end
   end

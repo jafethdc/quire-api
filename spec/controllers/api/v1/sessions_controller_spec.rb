@@ -6,7 +6,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
       @test_fb_users = Koala::Facebook::TestUsers.new(  app_id: 731044283720945,
                                                         secret: 'e32e3bf7859a0208b68412775c823028')
       @test_fb_user = @test_fb_users.create(true, ['email'])
-      @user = User.create(FactoryGirl.attributes_for(:user, email: @test_fb_user['email']))
+      @user =  FactoryGirl.create(:user, email: @test_fb_user['email'])
     end
 
     context 'when successfully created' do
@@ -15,8 +15,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
       end
 
       it 'renders the json representation for user just logged in' do
-        user_response = JSON.parse(response.body, symbolize_names: true)
-        expect(user_response[:email]).to eql @user.email
+        expect(json_response[:email]).to eql @user.email
       end
 
       it { is_expected.to respond_with 200 }
@@ -44,7 +43,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
 
   describe 'POST #destroy' do
     before(:all) do
-      @user = User.create(FactoryGirl.attributes_for(:user).merge(access_token: SecureRandom.base58(24)))
+      @user = FactoryGirl.create(:logged_user)
     end
 
     before(:each) do
