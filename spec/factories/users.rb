@@ -8,5 +8,6 @@ FactoryGirl.define do
     factory :logged_user do
       access_token        { SecureRandom.base58(24) }
     end
+    RGeo::Geographic::SphericalPointImpl
   end
 end

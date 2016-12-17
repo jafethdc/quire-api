@@ -1,7 +1,7 @@
 module Api
   module V1
     class ProductsController < ApplicationController
-      before_action :authenticate_with_token, only: [:create, :update, :destroy]
+      before_action :authenticate_with_token, only: [:create, :update, :destroy, :nearby]
 
       def index
         user = User.find(params[:user_id])
@@ -12,6 +12,10 @@ module Api
         user = User.find(params[:user_id])
         product = user.products.find(params[:id])
         render json: product, status: 200
+      end
+
+      def nearby
+        render json: logged_user.nearby_products, status: 200
       end
 
       def create

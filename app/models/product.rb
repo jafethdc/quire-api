@@ -10,4 +10,5 @@ class Product < ApplicationRecord
   validates :seller, presence: true
 
   validates_associated :product_images
+
 end
