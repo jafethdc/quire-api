@@ -2,11 +2,11 @@ module Authenticable
   def logged_user
     unless @current_user
       unless request.headers['Authorization']
-        raise ActiveRecord::RecordNotFound.new('No authorization header was provided', User.to_s, User.primary_key)
+        raise Exceptions::UnauthorizedError.new('No authorization header was provided')
       end
       @current_user = User.find_by(access_token: request.headers['Authorization'])
       unless @current_user
-        raise ActiveRecord::RecordNotFound.new('The authorization header provided is invalid', User.to_s, User.primary_key)
+        raise Exceptions::UnauthorizedError.new('The authorization header provided is invalid')
       end
     end
     @current_user

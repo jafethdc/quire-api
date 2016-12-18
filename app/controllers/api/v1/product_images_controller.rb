@@ -3,6 +3,12 @@ module Api
     class ProductImagesController < ApplicationController
       before_action :authenticate_with_token, only: [:create, :destroy]
 
+      def index
+        user = User.find(params[:user_id])
+        product = user.products.find(params[:product_id])
+        render json: product.product_images, status: 200
+      end
+
       def create
         product = logged_user.products.find(params[:product_id])
         product_image = product.product_images.build(product_image_params)

@@ -6,17 +6,20 @@ RSpec.configure do |c|
 end
 
 RSpec.describe ProductImage, type: :model do
-  subject { FactoryGirl.build(:product_image) }
+  let(:product_image) { FactoryGirl.create(:product_image) }
 
-  it { is_expected.to respond_to(:img) }
-  it { is_expected.to respond_to(:product) }
+  it 'is valid with valid attributes' do
+    expect(product_image).to be_valid
+  end
 
-  it { is_expected.to be_valid }
+  it { expect(product_image).to validate_presence_of(:product) }
 
-  it { is_expected.to have_attached_file(:img) }
+  context 'when img_base is not provided' do
+    it 'is invalid' do
+      test_product_image = FactoryGirl.build(:product_image, img_base: nil)
+      test_product_image.valid?
+      expect(test_product_image.errors[:img].size).to eq(1)
+    end
+  end
 
-  # Don't know why it's not working
-  # it { is_expected.to validate_attachment_presence(:img) }
-
-  it { is_expected.to validate_presence_of(:product) }
 end

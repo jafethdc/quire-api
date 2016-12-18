@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::ProductsController, type: :controller do
-  let(:seller) { FactoryGirl.create(:logged_user)  }
+  let(:seller) { FactoryGirl.create(:logged_user, preference_radius: 20000)  }
 
   describe 'GET #index' do
     context 'when there is no products' do
@@ -11,8 +11,8 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
       end
     end
 
-    context 'when there is 5 products' do
-      it 'returns an empty array' do
+    context 'when there are 5 products' do
+      it 'returns a size-5 array' do
         FactoryGirl.create_list(:product, 5, seller_id: seller.id)
         get :index, params: { user_id: seller.id }
         expect(json_response.size).to eq(5)
@@ -41,7 +41,40 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
         is_expected.to respond_with 404
       end
     end
+  end
 
+  describe 'GET #nearby' do
+    let!(:user) do
+      random_location = rand_point_within(seller.last_known_location, seller.preference_radius)
+      FactoryGirl.create(:logged_user, last_known_location: random_location )
+    end
+    let!(:product_list) { FactoryGirl.create_list(:product, 3, seller_id: user.id) }
+    let!(:user2) do
+      random_location = rand_point_within(seller.last_known_location, seller.preference_radius + 4000)
+      FactoryGirl.create(:logged_user, last_known_location: random_location )
+    end
+    let!(:product_list2) { FactoryGirl.create_list(:product, 4, seller_id: user2.id) }
+
+    it 'returns the products within the right area' do
+      api_authorization_header(seller.access_token)
+      get :nearby, params: { user_id: seller.id }
+      expect(json_response.size).to  be >= product_list.size
+    end
+
+    context 'when some users get closer' do
+      it 'returns more products within the right area' do
+        user2.update_attribute('last_known_location', rand_point_within(seller.last_known_location, seller.preference_radius))
+        api_authorization_header(seller.access_token)
+        get :nearby, params: { user_id: seller.id }
+        expect(json_response.size).to eq(product_list.size+product_list2.size)
+      end
+    end
+
+    it 'returns 200' do
+      api_authorization_header(seller.access_token)
+      get :nearby, params: { user_id: seller.id }
+      is_expected.to respond_with 200
+    end
   end
 
   describe 'POST #create' do
@@ -98,7 +131,7 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
 
       it 'returns 404' do
         post :create, params: { user_id: seller.id, product: product_attributes }
-        is_expected.to respond_with 404
+        is_expected.to respond_with 401
       end
     end
 
@@ -108,7 +141,7 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
       it 'returns 404' do
         api_authorization_header('holajejeje')
         post :create, params: { user_id: seller.id, product: product_attributes }
-        is_expected.to respond_with 404
+        is_expected.to respond_with 401
       end
 
     end
@@ -120,14 +153,13 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
     context 'when is successfully updated' do
       it 'changes only the specified fields' do
         api_authorization_header(seller.access_token)
-        patch :update, params: { user_id: seller.id, id: old_product.id, product: { title: 'producto1' } }
-        # Be more specific
-        expect(json_response).not_to eq(old_product.attributes)
+        patch :update, params: { user_id: seller.id, id: old_product.id, product: { name: 'producto1' } }
+        expect(json_response[:name]).not_to eq(old_product.name)
       end
 
       it 'returns 200' do
         api_authorization_header(seller.access_token)
-        patch :update, params: { user_id: seller.id, id: old_product.id, product: { title: 'producto1' } }
+        patch :update, params: { user_id: seller.id, id: old_product.id, product: { name: 'producto1' } }
         is_expected.to respond_with 200
       end
     end
