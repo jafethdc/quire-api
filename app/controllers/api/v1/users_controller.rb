@@ -1,6 +1,11 @@
 module Api
   module V1
     class UsersController < ApplicationController
+      def show
+        user = User.find(params[:id])
+        render json: user, status: 200
+      end
+
       def create
         user = User.new(user_params)
         fb_validation_result = valid_fb_user?(params[:fb_access_token])
