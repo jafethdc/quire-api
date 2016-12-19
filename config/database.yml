@@ -22,5 +22,7 @@ test:
 production:
   <<: *default
   database: quireapp_production
+  url: <%= ENV.fetch('DATABASE_URL', '').sub(/^postgres/, "postgis") %>
   username: quireapp
   password: <%= ENV['MYAPP_DATABASE_PASSWORD'] %>
+
