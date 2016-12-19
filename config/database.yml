@@ -21,6 +21,6 @@ test:
 
 production:
   <<: *default
-  database: quire-api
-  username: idk
-  password: idk
+  database: quireapp_production
+  username: quireapp
+  password: <%= ENV['MYAPP_DATABASE_PASSWORD'] %>
