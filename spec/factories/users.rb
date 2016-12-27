@@ -1,14 +1,17 @@
+require File.join(Rails.root, 'spec','support', 'faker_helpers.rb')
+
+include Authenticable
+include Faker::GeographicHelpers
+
 FactoryGirl.define do
   factory :user do
     email               { FFaker::Internet.email }
     username            { FFaker::Internet.user_name }
     full_name           { FFaker::Name.name }
-    last_known_location { RGeo::Geographic.spherical_factory(srid: 4326)
-                                          .point(FFaker::Geolocation.lng, FFaker::Geolocation.lat) }
-    preference_radius   { rand(1000..400000) }
+    last_location       { rand_point.as_text }
 
     factory :logged_user do
-      access_token        { SecureRandom.base58(24) }
+      access_token        { generate_api_token }
     end
   end
 end

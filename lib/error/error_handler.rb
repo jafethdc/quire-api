@@ -6,8 +6,16 @@ module Error
           render json: { errors: [e.message] }, status: 404
         end
 
-        rescue_from Exceptions::UnauthorizedError do |e|
-          render json: { errors: [e.message] }, status: 401
+        rescue_from Koala::Facebook::APIError do |e|
+          render json: { errors: [e.message] }, status: 503
+        end
+
+        rescue_from Koala::Facebook::ClientError do |e|
+          render json: { errors: [e.message] }, status: 422
+        end
+
+        rescue_from Koala::Facebook::ServerError do |e|
+          render json: { errors: [e.message] }, status: 503
         end
       end
     end

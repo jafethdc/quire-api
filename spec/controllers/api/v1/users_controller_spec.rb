@@ -3,58 +3,98 @@ require 'rails_helper'
 RSpec.describe Api::V1::UsersController, type: :controller do
 
   describe 'POST #create' do
-    before(:all) do
-      @test_fb_users = Koala::Facebook::TestUsers.new(  app_id: 731044283720945,
-                                                        secret: 'e32e3bf7859a0208b68412775c823028')
-    end
-
-    context 'when is successfully created' do
-      before(:all) do
-        @test_fb_user = @test_fb_users.create(true, ['email'])
-        @user_attributes = FactoryGirl.attributes_for(:user, email: @test_fb_user['email'])
-      end
-
-      before(:each) do
-        post :create, params: { user: @user_attributes, fb_access_token: @test_fb_user['access_token'] }, format: :json
-      end
-
+    context 'when valid parameters are passed' do
       it 'renders the json representation for the user record just created' do
-        expect(json_response[:email]).to eql @user_attributes[:email]
+        user_attributes = FactoryGirl.attributes_for(:user)
+        stub_validate_fb_user(Api::V1::UsersController, true)
+        post :create, params: { user: user_attributes, fb_access_token: 'an access token' }, format: :json
+        expect(json_response[:email]).to eql user_attributes[:email]
       end
 
-      it { is_expected.to respond_with 201 }
-
-      after(:all) do
-        @test_fb_users.delete(@test_fb_user)
+      it 'responds with 201' do
+        user_attributes = FactoryGirl.attributes_for(:user)
+        stub_validate_fb_user(Api::V1::UsersController, true)
+        post :create, params: { user: user_attributes, fb_access_token: 'an access token' }, format: :json
+        is_expected.to respond_with 201
       end
 
     end
 
-    context 'when is not created' do
-      before(:all) do
-        #notice I'm not including the email
-        @invalid_user_attributes = FactoryGirl.attributes_for(:user).except(:email)
-      end
-
-      before(:each) do
-        post :create, params: { user: @invalid_user_attributes }, format: :json
-      end
-
+    context 'when an invalid parameter is sent' do
       it 'renders an errors json' do
+        user_attributes = FactoryGirl.attributes_for(:user, username: nil)
+        stub_validate_fb_user(Api::V1::UsersController, true)
+        post :create, params: { user: user_attributes, fb_access_token: 'an access token' }, format: :json
         expect(json_response).to have_key(:errors)
       end
 
-      it { is_expected.to respond_with 422 }
+      it 'responds with 422' do
+        user_attributes = FactoryGirl.attributes_for(:user, username: nil)
+        stub_validate_fb_user(Api::V1::UsersController, true)
+        post :create, params: { user: user_attributes, fb_access_token: 'an access token' }, format: :json
+        is_expected.to respond_with 422
+      end
     end
 
     context 'when no valid fb access token is provided' do
-      before(:each) do
-        @invalid_user_attributes = FactoryGirl.attributes_for(:user)
-        post :create, params: { user: @invalid_user_attributes }, format: :json
+      it 'renders an errors json' do
+        invalid_user_attributes = FactoryGirl.attributes_for(:user)
+        post :create, params: { user: invalid_user_attributes }, format: :json
+        expect(json_response).to have_key(:errors)
       end
 
-      it 'renders an errors json' do
+      it 'responds with 422' do
+        invalid_user_attributes = FactoryGirl.attributes_for(:user)
+        post :create, params: { user: invalid_user_attributes }, format: :json
+        is_expected.to respond_with 422
+      end
+    end
+  end
+
+  describe 'PUT/PATCH #update' do
+    let(:user) { FactoryGirl.create(:logged_user) }
+
+    context 'when the value(s) to update are valid' do
+      it 'returns a json with the updated user' do
+        api_authorization_header(user.access_token)
+        patch :update, params: { id: user.id, user: { username: 'jafethdiazc' } }, format: :json
+        expect(json_response[:username]).to eql('jafethdiazc')
+      end
+
+      it 'responds with 200' do
+        api_authorization_header(user.access_token)
+        patch :update, params: { id: user.id, user: { last_location: 'POINT (-12.0647631 -76.9470219)' } }, format: :json
+        is_expected.to respond_with 200
+      end
+    end
+
+    context 'when invalid values are sent' do
+      it 'returns a json with the error(s)' do
+        api_authorization_header(user.access_token)
+        patch :update, params: { id: user.id, user: { last_location: 'POINT (hola jeje)' } }, format: :json
         expect(json_response).to have_key(:errors)
+      end
+
+      it 'responds with 422' do
+        api_authorization_header(user.access_token)
+        patch :update, params: { id: user.id, user: { last_location: 'POINT (hola jeje)' } }, format: :json
+        is_expected.to respond_with 422
+      end
+    end
+
+    context 'when the user id does not match the access token' do
+      let(:other_user) { FactoryGirl.create(:logged_user) }
+
+      it 'the operation is aborted' do
+        api_authorization_header(user.access_token)
+        patch :update, params: { id: other_user.id, user: { username: 'pepito123' } }, format: :json
+        expect(user.reload.username).not_to eq('pepito123')
+      end
+
+      it 'responds with 401' do
+        api_authorization_header(user.access_token)
+        patch :update, params: { id: other_user.id, user: { username: 'pepito123' } }, format: :json
+        is_expected.to respond_with 401
       end
     end
   end

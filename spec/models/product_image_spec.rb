@@ -6,19 +6,21 @@ RSpec.configure do |c|
 end
 
 RSpec.describe ProductImage, type: :model do
-  let(:product_image) { FactoryGirl.create(:product_image) }
+  let(:product_image) { FactoryGirl.build(:product_image) }
 
-  it 'is valid with valid attributes' do
-    expect(product_image).to be_valid
+  it { expect(product_image).to be_valid }
+
+  describe '#product' do
+    it { expect(product_image).to validate_presence_of(:product) }
   end
 
-  it { expect(product_image).to validate_presence_of(:product) }
-
-  context 'when img_base is not provided' do
-    it 'is invalid' do
-      test_product_image = FactoryGirl.build(:product_image, img_base: nil)
-      test_product_image.valid?
-      expect(test_product_image.errors[:img].size).to eq(1)
+  describe '.new' do
+    context 'when img_base is not provided' do
+      it 'is invalid' do
+        other_product_image = FactoryGirl.build(:product_image, img_base: nil)
+        other_product_image.valid?
+        expect(other_product_image.errors[:img].size).to eq(1)
+      end
     end
   end
 

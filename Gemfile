@@ -38,6 +38,10 @@ gem 'aws-sdk', '~> 2.3'
 # Env variables
 gem 'figaro'
 
+# Fake data
+gem 'factory_girl_rails'
+gem 'ffaker'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
@@ -53,8 +57,6 @@ end
 group :test do
   gem 'rspec-rails', '~> 3.5'
   gem 'shoulda-matchers', '~> 3.1'
-  gem 'factory_girl_rails'
-  gem 'ffaker'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

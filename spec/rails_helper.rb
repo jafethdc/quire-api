@@ -58,7 +58,10 @@ RSpec.configure do |config|
   # Including custom helpers
   config.include Request::JsonHelpers, type: :controller
   config.include Request::HeadersHelpers, type: :controller
-  config.include FakerHelpers::Geographic, type: :controller
+  config.include Faker::GeographicHelpers
+  config.include Faker::ImageHelpers
+  config.include StubHelpers
+
 end
 
 Shoulda::Matchers.configure do |config|

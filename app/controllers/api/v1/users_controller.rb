@@ -1,34 +1,40 @@
 module Api
   module V1
     class UsersController < ApplicationController
+      before_action :authenticate_with_token, only: [:update]
+      before_action only: [:update] { match_token_with_user(:id) }
+
       def show
         user = User.find(params[:id])
         render json: user, status: 200
       end
 
       def create
-        user = User.new(user_params)
-        fb_validation_result = valid_fb_user?(params[:fb_access_token])
-        if fb_validation_result[:valid]
-          user.access_token = generate_api_token
+        fb_profile = validate_fb_user(params[:fb_access_token])
+        if fb_profile
+          user = User.new(user_params.merge(access_token: generate_api_token))
+          if user.save
+            render json: user, status: 201
+          else
+            render json: { errors: user.errors.full_messages }, status: 422
+          end
         else
-          user.errors.add('FB API error: ', [fb_validation_result[:error_message]])
+          render json: { errors: ['There was an error with your fb access token'] }, status: 422
         end
+      end
 
-        if user.valid? and fb_validation_result[:valid]
-          user.save
-          render json: user, status: 201
+      def update
+        if logged_user.update(user_params)
+          render json: logged_user, status: 200
         else
-          render json: { errors: user.errors.full_messages }, status: 422
+          render json: { errors: logged_user.errors.full_messages }, status: 422
         end
-
       end
 
       private
         def user_params
-          params.require(:user).permit(:username, :email, :full_name, :last_known_location)
+          params.require(:user).permit(:username, :email, :full_name, :last_location)
         end
-
     end
   end
 end

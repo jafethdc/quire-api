@@ -1,33 +1,34 @@
 module Authenticable
   def logged_user
-    unless @current_user
-      unless request.headers['Authorization']
-        raise Exceptions::UnauthorizedError.new('No authorization header was provided')
-      end
-      @current_user = User.find_by(access_token: request.headers['Authorization'])
-      unless @current_user
-        raise Exceptions::UnauthorizedError.new('The authorization header provided is invalid')
-      end
-    end
     @current_user
   end
 
   def authenticate_with_token
-    render json: { errors: ['Not authenticated'] }, status: :unauthorized unless user_signed_in?
+    if request.headers['Authorization']
+      @current_user = User.find_by(access_token: request.headers['Authorization'])
+      unless @current_user
+        render json: { errors: ['The authorization header provided is invalid'] }, status: 422
+      end
+    else
+      render json: { errors: ['No authorization header was provided'] }, status: 422
+    end
+  end
+
+  def match_token_with_user(param_name)
+    user = User.find(params[param_name])
+    unless user == logged_user
+      render json: { errors: ["You don't have permission to modify the specified user"] }, status: 401
+    end
   end
 
   def user_signed_in?
-    logged_user.present?
+    @current_user.present?
   end
 
-  def valid_fb_user?(access_token)
-    begin
-      graph = Koala::Facebook::API.new(access_token)
-      profile = graph.get_object('me', fields: 'id,name,email')
-      { valid: profile.include?('id'), profile: profile }
-    rescue Koala::Facebook::APIError => e
-      { valid: false, error_message: e.message}
-    end
+  def validate_fb_user(access_token)
+    graph = Koala::Facebook::API.new(access_token)
+    graph.get_object('me', fields: 'id,name,email')
+    graph.symbolize_keys
   end
 
   def generate_api_token

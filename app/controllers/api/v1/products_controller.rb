@@ -2,6 +2,7 @@ module Api
   module V1
     class ProductsController < ApplicationController
       before_action :authenticate_with_token, only: [:create, :update, :destroy, :nearby]
+      before_action only: [:create, :update, :destroy, :nearby] { match_token_with_user(:user_id) }
 
       def index
         user = User.find(params[:user_id])

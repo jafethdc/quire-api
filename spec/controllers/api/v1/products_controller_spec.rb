@@ -30,14 +30,15 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
 
     context 'when the specified user owns the product' do
       it 'returns 200' do
-        get :index, params: { user_id: product.seller.id, id: product.id }
+        get :show, params: { user_id: product.seller.id, id: product.id }
         is_expected.to respond_with 200
       end
     end
 
     context 'when the specified user does not own the product' do
       it 'returns 404' do
-        get :index, params: { user_id: 1324, id: product.id }
+        other_seller = FactoryGirl.create(:user)
+        get :show, params: { user_id: other_seller.id, id: product.id }
         is_expected.to respond_with 404
       end
     end
@@ -45,13 +46,13 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
 
   describe 'GET #nearby' do
     let!(:user) do
-      random_location = rand_point_within(seller.last_known_location, seller.preference_radius)
-      FactoryGirl.create(:logged_user, last_known_location: random_location )
+      random_location = rand_point_within(seller.last_location, seller.preference_radius)
+      FactoryGirl.create(:logged_user, last_location: random_location )
     end
     let!(:product_list) { FactoryGirl.create_list(:product, 3, seller_id: user.id) }
     let!(:user2) do
-      random_location = rand_point_within(seller.last_known_location, seller.preference_radius + 4000)
-      FactoryGirl.create(:logged_user, last_known_location: random_location )
+      random_location = rand_point_within(seller.last_location, seller.preference_radius + 4000)
+      FactoryGirl.create(:logged_user, last_location: random_location )
     end
     let!(:product_list2) { FactoryGirl.create_list(:product, 4, seller_id: user2.id) }
 
@@ -63,7 +64,7 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
 
     context 'when some users get closer' do
       it 'returns more products within the right area' do
-        user2.update_attribute('last_known_location', rand_point_within(seller.last_known_location, seller.preference_radius))
+        user2.update_attribute('last_location', rand_point_within(seller.last_location, seller.preference_radius))
         api_authorization_header(seller.access_token)
         get :nearby, params: { user_id: seller.id }
         expect(json_response.size).to eq(product_list.size+product_list2.size)
@@ -81,7 +82,7 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
 
     context 'when product images are provided' do
       let(:product_attributes) do
-        product_image_attributes = FactoryGirl.attributes_for_list(:product_image,5)
+        product_image_attributes = FactoryGirl.attributes_for_list(:product_image, 5)
         FactoryGirl.attributes_for(:product, product_images_attributes: product_image_attributes)
       end
 
@@ -99,7 +100,7 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
       end
     end
 
-    context 'when a field is not provided' do
+    context 'when a required field is not provided' do
       let(:product_attributes) { FactoryGirl.attributes_for(:product).except(:description) }
 
       it 'returns an errors array with only one message' do
@@ -115,7 +116,7 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
       end
     end
 
-    context 'when is successfully created' do
+    context 'when valid fields are provided' do
       let(:product_attributes) { FactoryGirl.attributes_for(:product) }
 
       it 'returns a product owned by the corresponding seller' do
@@ -129,19 +130,19 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
     context 'when no authentication header is provided' do
       let(:product_attributes) { FactoryGirl.attributes_for(:product) }
 
-      it 'returns 404' do
+      it 'returns 422' do
         post :create, params: { user_id: seller.id, product: product_attributes }
-        is_expected.to respond_with 401
+        is_expected.to respond_with 422
       end
     end
 
     context 'when invalid authentication header is provided' do
       let(:product_attributes) { FactoryGirl.attributes_for(:product) }
 
-      it 'returns 404' do
+      it 'returns 422' do
         api_authorization_header('holajejeje')
         post :create, params: { user_id: seller.id, product: product_attributes }
-        is_expected.to respond_with 401
+        is_expected.to respond_with 422
       end
 
     end

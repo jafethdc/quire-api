@@ -9,25 +9,24 @@ class User < ApplicationRecord
   validates :email, presence: true, format: { with: /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/ },
                     uniqueness: { case_sensitive: false }
   validates :full_name, presence: true
-  validates :last_known_location, presence: true
+  validates :last_location, presence: true
   validates :preference_radius, presence: true, numericality: { greater_than_or_equal_to: 0.0 }
 
-
-  def nearby_users
-    table = User.arel_table
-    User.where(geographical_distance_from_query(last_known_location, table[:last_known_location]).lt(preference_radius))
+  def nearby_users(radius = preference_radius)
+    User.where(distance_within(last_location, User.arel_table[:last_location], radius))
         .where.not(id: id)
   end
 
-  def nearby_products
+  def nearby_products(radius = preference_radius)
     table = User.arel_table
     Product.joins(:seller)
-        .where(geographical_distance_from_query(last_known_location, table[:last_known_location]).lt(preference_radius))
+        .where(distance_within(last_location, table[:last_location], radius))
         .where(table[:id].not_eq(id))
   end
 
   private
     def set_defaults
-      self.preference_radius ||= 10000
+      self.preference_radius ||= 15000
     end
+
 end
