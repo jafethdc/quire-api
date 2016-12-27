@@ -1,5 +1,5 @@
 class ProductImage < ApplicationRecord
-  before_validation :parse_image
+  before_validation :parse_image, if: :new_record?
 
   attr_accessor :img_base
 
