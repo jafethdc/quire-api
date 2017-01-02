@@ -17,7 +17,7 @@ module Authenticable
   def match_token_with_user(param_name)
     user = User.find(params[param_name])
     unless user == logged_user
-      render json: { errors: ["You don't have permission to modify the specified user"] }, status: 401
+      render json: { errors: ["You are not allowed to access the specified user's information"] }, status: 401
     end
   end
 
@@ -27,8 +27,8 @@ module Authenticable
 
   def validate_fb_user(access_token)
     graph = Koala::Facebook::API.new(access_token)
-    graph.get_object('me', fields: 'id,name,email')
-    graph.symbolize_keys
+    profile = graph.get_object('me', fields: 'id,name,email')
+    profile.symbolize_keys
   end
 
   def generate_api_token

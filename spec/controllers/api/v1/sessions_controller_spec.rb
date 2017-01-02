@@ -30,7 +30,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
   end
 
 
-  describe 'POST #destroy' do
+  describe 'DELETE #destroy' do
     let(:user) { FactoryGirl.create(:logged_user) }
 
     it 'responds with 204' do
