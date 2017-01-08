@@ -3,8 +3,8 @@ class ProductSerializer < ActiveModel::Serializer
   belongs_to :seller
 
   class UserSerializer < ActiveModel::Serializer
-    attributes :id, :username, :email, :full_name
+    attributes :id, :username, :email, :name
   end
 
-  has_many :product_images
+  has_many :images
 end

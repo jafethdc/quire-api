@@ -11,15 +11,11 @@ module Api
 
       def create
         fb_profile = validate_fb_user(params[:fb_access_token])
-        if fb_profile
-          user = User.new(user_params.merge(access_token: generate_api_token))
-          if user.save
-            render json: user, status: 201
-          else
-            render json: { errors: user.errors.full_messages }, status: 422
-          end
+        user = User.new(user_params.merge(access_token: generate_api_token).merge(fb_profile.slice(:email, :name)))
+        if user.save
+          render json: user, status: 201
         else
-          render json: { errors: ['There was an error with your fb access token'] }, status: 422
+          render json: { errors: user.errors.full_messages }, status: 422
         end
       end
 
@@ -33,7 +29,7 @@ module Api
 
       private
         def user_params
-          params.require(:user).permit(:username, :email, :full_name, :last_location)
+          params.require(:user).permit(:username, :last_location)
         end
     end
   end

@@ -7,12 +7,12 @@ module Api
       def index
         user = User.find(params[:user_id])
         product = user.products.find(params[:product_id])
-        render json: product.product_images, status: 200
+        render json: product.images, status: 200
       end
 
       def create
         product = logged_user.products.find(params[:product_id])
-        product_image = product.product_images.build(product_image_params)
+        product_image = product.images.build(product_image_params)
         if product_image.save
           render json: product_image, status: 201
         else
@@ -22,7 +22,7 @@ module Api
 
       def destroy
         product = logged_user.products.find(params[:product_id])
-        product_image = product.product_images.find(params[:id])
+        product_image = product.images.find(params[:id])
         product_image.destroy
         head 204
       end

@@ -48,7 +48,7 @@ module Api
         # Refactor this to have params for create and update...
         def product_params
           params.require(:product).permit(:name, :description, :price, :seller_id,
-                                          product_images_attributes: [:img_file_name, :img_base])
+                                          images_attributes: [:img_file_name, :img_base])
         end
     end
   end

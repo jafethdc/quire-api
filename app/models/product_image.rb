@@ -3,7 +3,7 @@ class ProductImage < ApplicationRecord
 
   attr_accessor :img_base
 
-  belongs_to :product, inverse_of: :product_images
+  belongs_to :product, inverse_of: :images
 
   has_attached_file :img, styles: { medium: '300x300>', thumb: '100x100>' }, default_url: '/images/:style/missing.png'
   validates :img, attachment_presence: true

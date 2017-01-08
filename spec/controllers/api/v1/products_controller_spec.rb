@@ -45,15 +45,9 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
   end
 
   describe 'GET #nearby' do
-    let!(:user) do
-      random_location = rand_point_within(seller.last_location, seller.preference_radius)
-      FactoryGirl.create(:logged_user, last_location: random_location )
-    end
+    let!(:user) { FactoryGirl.create(:logged_user, last_location: rand_point_within(seller.last_location, seller.preference_radius)) }
     let!(:product_list) { FactoryGirl.create_list(:product, 3, seller_id: user.id) }
-    let!(:user2) do
-      random_location = rand_point_within(seller.last_location, seller.preference_radius + 4000)
-      FactoryGirl.create(:logged_user, last_location: random_location )
-    end
+    let!(:user2) { FactoryGirl.create(:logged_user, last_location: rand_point_within(seller.last_location, seller.preference_radius + 4000)) }
     let!(:product_list2) { FactoryGirl.create_list(:product, 4, seller_id: user2.id) }
 
     it 'returns the products within the right area' do
@@ -83,7 +77,7 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
     context 'when product images are provided' do
       let(:product_attributes) do
         product_image_attributes = FactoryGirl.attributes_for_list(:product_image, 5)
-        FactoryGirl.attributes_for(:product, product_images_attributes: product_image_attributes)
+        FactoryGirl.attributes_for(:product, images_attributes: product_image_attributes)
       end
 
       it 'creates 5 new product images' do
@@ -96,6 +90,7 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
       it 'returns 201' do
         api_authorization_header(seller.access_token)
         post :create, params: { user_id: seller.id, product: product_attributes }
+        byebug
         is_expected.to respond_with 201
       end
     end
@@ -144,7 +139,6 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
         post :create, params: { user_id: seller.id, product: product_attributes }
         is_expected.to respond_with 422
       end
-
     end
   end
 

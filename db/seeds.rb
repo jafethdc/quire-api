@@ -23,7 +23,7 @@ positions.each do |p|
   rand(1..3).times do
     p = u.products.create(FactoryGirl.attributes_for(:product))
     rand(1..2).times do
-      p.product_images.create(FactoryGirl.attributes_for(:product_image))
+      p.images.create(FactoryGirl.attributes_for(:product_image))
     end
   end
 end
