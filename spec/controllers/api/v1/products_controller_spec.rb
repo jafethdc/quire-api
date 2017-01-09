@@ -90,7 +90,6 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
       it 'returns 201' do
         api_authorization_header(seller.access_token)
         post :create, params: { user_id: seller.id, product: product_attributes }
-        byebug
         is_expected.to respond_with 201
       end
     end
