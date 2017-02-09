@@ -16,7 +16,7 @@ RSpec.describe ProductImage, type: :model do
 
   describe '.new' do
     context 'when img_base is not provided' do
-      it 'is invalid' do
+      it 'is invalid and img is invalid' do
         other_product_image = FactoryGirl.build(:product_image, img_base: nil)
         other_product_image.valid?
         expect(other_product_image.errors[:img].size).to eq(1)

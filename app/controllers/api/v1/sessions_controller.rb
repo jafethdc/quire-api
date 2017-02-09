@@ -8,13 +8,13 @@ module Api
         user = User.find_by_email(fb_profile[:email])
         if user
           if user.access_token.nil?
-            user.update_attributes(access_token: generate_api_token, last_location: user_params[:last_location])
+            user.update_attributes(update_params)
             render json: user, status: 200
           else
             render json: { errors: ['Session already exists'] }, status: 422
           end
         else
-          user = User.new(user_params.merge(access_token: generate_api_token).merge(fb_profile.slice(:email, :name)))
+          user = User.new(create_params(fb_profile))
           if user.save
             render json: user, status: 201
           else
@@ -29,8 +29,16 @@ module Api
       end
 
       private
+        def create_params(fb_profile)
+          user_params.merge(access_token: generate_api_token).merge(fb_profile.slice(:email, :name))
+        end
+
+        def update_params
+          { access_token: generate_api_token, last_location: user_params[:last_location] }
+        end
+
         def user_params
-          params.require(:user).permit(:username, :last_location, :preference_radius)
+          params.require(:user).permit(:last_location)
         end
     end
   end

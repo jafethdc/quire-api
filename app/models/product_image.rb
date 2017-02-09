@@ -13,8 +13,7 @@ class ProductImage < ApplicationRecord
 
   private
     def parse_image
-      image = Paperclip.io_adapters.for(img_base)
-      image.original_filename = self.img_file_name
-      self.img = image
+      # img is nil if img_base is nil
+      self.img = Paperclip.io_adapters.for(img_base)
     end
 end

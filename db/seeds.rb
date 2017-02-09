@@ -4,8 +4,14 @@ require 'factory_girl'
 require File.join(Rails.root, 'spec','support', 'faker_helpers.rb')
 include Faker::GeographicHelpers
 
+
+# Jafeth's house
 FactoryGirl.create(:logged_user, last_location: 'POINT(-76.9499743 -12.0632436)', preference_radius: 10000)
+
+# Naren's house
 FactoryGirl.create(:logged_user, last_location: 'POINT(-77.0126659 -12.0928396)', preference_radius: 12000)
+
+# Naren's work
 FactoryGirl.create(:logged_user, last_location: 'POINT(-77.027306 -12.115957)', preference_radius: 10000)
 
 positions = ['POINT (-76.981391 -12.188758)', 'POINT (-76.96672 -12.125636)', 'POINT (-76.883925 -12.042481)',

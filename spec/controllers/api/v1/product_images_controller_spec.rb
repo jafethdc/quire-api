@@ -27,7 +27,7 @@ RSpec.describe Api::V1::ProductImagesController, type: :controller do
         post :create, params: { product_image:  product_image_attrs,
                                 product_id:     product.id,
                                 user_id:        seller.id  }
-        expect(json_response[:img_file_name]).to eq(product_image_attrs[:img_file_name])
+        expect(json_response[:url]).not_to be_nil
       end
 
       it 'returns 201' do
@@ -40,7 +40,7 @@ RSpec.describe Api::V1::ProductImagesController, type: :controller do
     end
 
     context 'when a field is not provided' do
-      let(:product_image_attrs) { FactoryGirl.attributes_for(:product_image).except(:img_base) }
+      let(:product_image_attrs) { FactoryGirl.attributes_for(:product_image, img_base: nil) }
 
       it 'returns 422' do
         api_authorization_header(seller.access_token)

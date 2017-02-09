@@ -29,7 +29,7 @@ module Api
 
       private
         def product_image_params
-          params.require(:product_image).permit(:img_file_name, :img_base)
+          params.require(:product_image).permit(:img_base)
         end
     end
   end

@@ -7,7 +7,7 @@ module Error
         end
 
         rescue_from Koala::Facebook::APIError do |e|
-          render json: { errors: [e.message] }, status: 503
+          render json: { errors: [e.message] }, status: 500
         end
 
         rescue_from Koala::Facebook::ClientError do |e|
