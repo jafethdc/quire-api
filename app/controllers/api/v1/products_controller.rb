@@ -6,7 +6,8 @@ module Api
 
       def index
         user = User.find(params[:user_id])
-        render json: user.products, status: 200
+        products = user.products.paginate(page: params[:page], per_page: params[:per_page])
+        render json: products, status: 200
       end
 
       def show
@@ -16,7 +17,8 @@ module Api
       end
 
       def nearby
-        render json: logged_user.nearby_products, status: 200
+        nearby_products = logged_user.nearby_products.paginate(page: params[:page], per_page: params[:per_page])
+        render json: nearby_products, status: 200
       end
 
       def create

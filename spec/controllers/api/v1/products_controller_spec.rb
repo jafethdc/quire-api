@@ -19,6 +19,15 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
       end
     end
 
+    context 'when pagination required' do
+      let!(:products) { FactoryGirl.create_list(:product, 5, seller_id: seller.id) }
+
+      it 'returns the specified number of products' do
+        get :index, params: { user_id: seller.id, page: 1, per_page: 3 }
+        expect(json_response.size).to eq(3)
+      end
+    end
+
     it 'returns 200' do
       get :index, params: { user_id: seller.id }
       is_expected.to respond_with 200
@@ -62,6 +71,14 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
         api_authorization_header(seller.access_token)
         get :nearby, params: { user_id: seller.id }
         expect(json_response.size).to eq(product_list.size+product_list2.size)
+      end
+    end
+
+    context 'when pagination required' do
+      it 'returns the specified number of products' do
+        api_authorization_header(seller.access_token)
+        get :nearby, params: { user_id: seller.id, page: 1, per_page: 2 }
+        expect(json_response.size).to eq(2)
       end
     end
 

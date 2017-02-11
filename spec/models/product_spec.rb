@@ -39,5 +39,21 @@ RSpec.describe Product, type: :model do
       expect(product.images.size).to eq(3)
     end
   end
+
+  describe '.paginate' do
+    let!(:products) { FactoryGirl.create_list(:product, 10) }
+
+    it 'returns as many products as specified' do
+      paged_products = Product.all.paginate(page: 1, per_page: 5)
+      expect(paged_products.length).to eq(5)
+    end
+
+    it 'returns the right sequences of products' do
+      products_sequence = Product.all.paginate(page: 1, per_page: 8)
+      products_sequence1 = Product.all.paginate(page: 1, per_page: 4)
+      products_sequence2 = Product.all.paginate(page: 2, per_page: 4)
+      expect(products_sequence).to eq(products_sequence1+products_sequence2)
+    end
+  end
 end
 
