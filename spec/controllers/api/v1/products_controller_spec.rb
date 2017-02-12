@@ -90,18 +90,18 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
   end
 
   describe 'POST #create' do
+    let(:product_attributes) do
+      product_images_attrs = FactoryGirl.attributes_for_list(:product_image, rand(1..5))
+      FactoryGirl.attributes_for(:product, images_attributes: product_images_attrs)
+    end
 
     context 'when product images are provided' do
-      let(:product_attributes) do
-        product_image_attributes = FactoryGirl.attributes_for_list(:product_image, 5)
-        FactoryGirl.attributes_for(:product, images_attributes: product_image_attributes)
-      end
-
-      it 'creates 5 new product images' do
+      it 'creates the specified number of product images' do
         count_before = ProductImage.count
+        images_count = product_attributes[:images_attributes].size
         api_authorization_header(seller.access_token)
         post :create, params: { user_id: seller.id, product: product_attributes }
-        expect(ProductImage.count).to eq(count_before+5)
+        expect(ProductImage.count).to eq(count_before+images_count)
       end
 
       it 'returns 201' do
@@ -112,24 +112,20 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
     end
 
     context 'when a required field is not provided' do
-      let(:product_attributes) { FactoryGirl.attributes_for(:product).except(:description) }
-
       it 'returns an errors array with only one message' do
         api_authorization_header(seller.access_token)
-        post :create, params: { user_id: seller.id, product: product_attributes }
+        post :create, params: { user_id: seller.id, product: product_attributes.except(:description) }
         expect(json_response[:errors].size).to eq(1)
       end
 
       it 'returns 422' do
         api_authorization_header(seller.access_token)
-        post :create, params: { user_id: seller.id, product: product_attributes }
+        post :create, params: { user_id: seller.id, product: product_attributes.except(:description) }
         is_expected.to respond_with 422
       end
     end
 
     context 'when valid fields are provided' do
-      let(:product_attributes) { FactoryGirl.attributes_for(:product) }
-
       it 'returns a product owned by the corresponding seller' do
         api_authorization_header(seller.access_token)
         post :create, params: { user_id: seller.id, product: product_attributes }
@@ -139,8 +135,6 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
 
     # The following two could be refactored...
     context 'when no authentication header is provided' do
-      let(:product_attributes) { FactoryGirl.attributes_for(:product) }
-
       it 'returns 422' do
         post :create, params: { user_id: seller.id, product: product_attributes }
         is_expected.to respond_with 422
@@ -148,8 +142,6 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
     end
 
     context 'when invalid authentication header is provided' do
-      let(:product_attributes) { FactoryGirl.attributes_for(:product) }
-
       it 'returns 422' do
         api_authorization_header('holajejeje')
         post :create, params: { user_id: seller.id, product: product_attributes }
@@ -189,11 +181,11 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
 
     context 'when the product had many images' do
       it 'deletes all the associated images' do
-        FactoryGirl.create_list(:product_image, 5, product_id: old_product.id)
+        images_count = old_product.images.count
         before_delete_count = ProductImage.count
         api_authorization_header(seller.access_token)
         delete :destroy, params: { user_id: seller.id, id: old_product.id }
-        expect(ProductImage.count).to eq(before_delete_count-5)
+        expect(ProductImage.count).to eq(before_delete_count-images_count)
       end
     end
   end

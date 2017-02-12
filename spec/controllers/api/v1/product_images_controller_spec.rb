@@ -6,13 +6,12 @@ RSpec.describe Api::V1::ProductImagesController, type: :controller do
 
   describe 'GET #index' do
     it "renders a json object with all the product's images" do
-      FactoryGirl.create_list(:product_image, 5, product_id: product.id)
+      images_count = product.images.size
       get :index, params: { user_id: seller.id, product_id: product.id }
-      expect(json_response.size).to eq(product.images.count)
+      expect(json_response.size).to eq(images_count)
     end
 
     it 'returns 200' do
-      FactoryGirl.create_list(:product_image, 5, product_id: product.id)
       get :index, params: { user_id: seller.id, product_id: product.id }
       is_expected.to respond_with 200
     end

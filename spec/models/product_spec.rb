@@ -18,13 +18,17 @@ RSpec.describe Product, type: :model do
     it { expect(product).to validate_numericality_of(:price) }
   end
 
+  describe '#images' do
+    it { expect(product).to validate_length_of(:images) }
+  end
+
   describe '#seller' do
     it { expect(product).to validate_presence_of(:seller) }
   end
 
   describe '#destroy' do
     it 'destroys all the associated images' do
-      product = FactoryGirl.create(:product, images_attributes: FactoryGirl.attributes_for_list(:product_image, 3))
+      product = FactoryGirl.create(:product)
       images_ids = product.images.map { |i| i.id }
       product.destroy
       expect(ProductImage.where(id: images_ids)).to be_empty

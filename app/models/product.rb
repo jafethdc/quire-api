@@ -10,6 +10,7 @@ class Product < ApplicationRecord
   validates :description, presence: true
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0.0 }
   validates :seller, presence: true
+  validates :images, length: { minimum: 1, maximum: 5, message: 'should be at least 1 and at most 5' }
 
   validates_associated :images
 
