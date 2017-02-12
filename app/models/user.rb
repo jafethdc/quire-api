@@ -13,7 +13,7 @@ class User < ApplicationRecord
 
   # Get all the nearby users. It uses the st_dwithin function of postgis for that purpose.
   #
-  # @param radius The radius within which to look for products
+  # @param radius : The radius within which to look for products
   # @return an ActiveRecord_Relation containing the nearby products
   def nearby_users(radius = preference_radius)
     User.where(distance_within(last_location, User.arel_table[:last_location], radius))
@@ -23,7 +23,7 @@ class User < ApplicationRecord
   # Get all the products belonging to nearby users. It uses the st_dwithin function of postgis
   # for that purpose.
   #
-  # @param radius The radius within to look for products
+  # @param radius : The radius within to look for products
   # @return an ActiveRecord_Relation containing the nearby products
   def nearby_products(radius = preference_radius)
     table = User.arel_table

@@ -20,12 +20,27 @@ class ProductImage < ApplicationRecord
 
     def product_accepts_more_images
       if product
-        # 2 ways to provide an image with a product
-        # a_product.images.build/create(image_attrs)
-        # ProductImage.build/create(image_attrs+product_id)
-        left_side = product.images.include? self
-        if (left_side and product.images.size > 5) or (not left_side and product.images.size >=5)
-          errors.add(:product, 'has too many images')
+        # Currently, I've recognized two scenarios:
+        # When you're creating the image from the model and just setting a product_id
+        # i.e. ProductImage.create(product_attributes+product_id)
+
+        # When you're creating the image from an association
+        # i.e. a_product.images.create(product_attributes)
+
+        # To get to know which one the current instance is in, we just check with the following
+        from_association = product.images.include? self
+
+        if from_association
+          # In this case the product could have many pending-to-save images.
+          if product.images.size > 5
+            errors.add(:product, 'has too many images')
+          end
+        else
+          # In this case, we only care about the already persisted ones
+          persisted_count = product.images.select{ |i| i.persisted? }.size
+          if persisted_count >= 5
+            errors.add(:product, 'hast too many images')
+          end
         end
       end
     end
