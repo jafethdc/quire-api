@@ -1,24 +1,31 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Quire is a Flogg-like app for android. This is the API it consumes.
 
-Things you may want to cover:
+## Features
 
-* Ruby version
+* Log in with facebook
+* You are shown a list of products being offered for sale near your current location.
+* Swipe to the left if you want to pass or to the right if you want to initiate a conversation with the seller
+* Select the option *new listing item* to publish your own product, providing images and some basic info, in a flash! 
 
-* System dependencies
+![alt tag](http://i.imgur.com/rcvHLrX.png)
 
-* Configuration
+## Technologies used
 
-* Database creation
+### API
 
-* Database initialization
+* Ruby on Rails
+* Postgresql + Postgis
+* Amazon S3
+* Facebook API
 
-* How to run the test suite
+### App
 
-* Services (job queues, cache servers, search engines, etc.)
+* Android SDK
+* Sendbird SDK
+* Facebook API
 
-* Deployment instructions
+### To do
 
-* ...
+* Show first in the list of products those that belong to friends of your friends in facebook!
