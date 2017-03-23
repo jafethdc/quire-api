@@ -27,9 +27,7 @@ positions = ['POINT (-76.981391 -12.188758)', 'POINT (-76.96672 -12.125636)', 'P
 positions.each do |p|
   u = FactoryGirl.create(:logged_user, last_location: p)
   rand(1..3).times do
-    p = u.products.create(FactoryGirl.attributes_for(:product))
-    rand(1..2).times do
-      p.images.create(FactoryGirl.attributes_for(:product_image))
-    end
+    images_attributes = FactoryGirl.attributes_for_list(:product_image, rand(1..2))
+    u.products.create(FactoryGirl.attributes_for(:product, images_attributes: images_attributes))
   end
 end
