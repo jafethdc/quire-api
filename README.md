@@ -1,6 +1,6 @@
 # README
 
-Quire is a Flogg-like app for android. This is the API it consumes.
+Quire is a tinder-like and ecommerce app for android. This is the API it consumes.
 
 ## Features
 
