@@ -24,6 +24,12 @@ positions = ['POINT (-76.981391 -12.188758)', 'POINT (-76.96672 -12.125636)', 'P
              'POINT(-76.982080 -12.110221)', 'POINT(-76.970026 -12.100553)', 'POINT(-76.948230 -12.089050)',
              'POINT(-76.948157 -12.073593)', 'POINT(-76.930420 -12.035911)', 'POINT(-76.989512 -12.078172)']
 
+naren_canada_locations = ['POINT (-83.048037 42.272746)', 'POINT (-83.040698 42.276493)', 'POINT (-83.034454 42.268872)',
+                          'POINT (-83.029647 42.274096)', 'POINT (-83.051921 42.272921)', 'POINT (-83.051191 42.276287)',
+                          'POINT (-83.045505 42.277049)', 'POINT (-83.034990 42.271746)', 'POINT (-83.034239 42.273588)']
+
+positions += naren_canada_locations
+
 positions.each do |p|
   u = FactoryGirl.create(:logged_user, last_location: p)
   rand(1..3).times do
