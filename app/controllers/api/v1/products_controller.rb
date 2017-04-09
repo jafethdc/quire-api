@@ -43,7 +43,7 @@ module Api
         product = logged_user.products.find(params[:id])
         product.destroy
         if product.destroyed?
-          render json: { success: true }, status: 204
+          render json: { success: true }
         else
           render json: { success: false }
         end
