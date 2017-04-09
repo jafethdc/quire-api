@@ -25,7 +25,7 @@ module Api
         product_image = product.images.find(params[:id])
         product_image.destroy
         if product_image.destroyed?
-          render json: { success: true }, status: 204
+          render json: { success: true }
         else
           render json: { success: false }
         end

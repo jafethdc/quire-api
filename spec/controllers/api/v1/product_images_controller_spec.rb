@@ -55,14 +55,6 @@ RSpec.describe Api::V1::ProductImagesController, type: :controller do
     context 'when is successfully destroyed' do
       let(:product_image) { FactoryGirl.create(:product_image, product_id: product.id) }
 
-      it 'returns 204' do
-        api_authorization_header(seller.access_token)
-        delete :destroy, params: { id:          product_image.id,
-                                   product_id:  product.id,
-                                   user_id:     seller.id }
-        is_expected.to respond_with 204
-      end
-
       it 'returns a success message' do
         api_authorization_header(seller.access_token)
         delete :destroy, params: { id:          product_image.id,

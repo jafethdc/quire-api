@@ -25,7 +25,7 @@ module Api
 
       def destroy
         if logged_user.update_attributes(access_token: nil)
-          render json: { success: true }, status: 204
+          render json: { success: true }
         else
           render json: { success: false }
         end

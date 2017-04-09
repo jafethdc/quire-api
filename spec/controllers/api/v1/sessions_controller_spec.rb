@@ -62,12 +62,6 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
   describe 'DELETE #destroy' do
     let(:user) { FactoryGirl.create(:logged_user) }
 
-    it 'responds with 204' do
-      api_authorization_header(user.access_token)
-      delete :destroy, format: :json
-      is_expected.to respond_with 204
-    end
-
     it 'returns a success message' do
       api_authorization_header(user.access_token)
       delete :destroy, format: :json
