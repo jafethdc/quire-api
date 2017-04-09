@@ -177,6 +177,12 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
         delete :destroy, params: { user_id: seller.id, id: old_product.id }
         is_expected.to respond_with 204
       end
+
+      it 'returns a success message' do
+        api_authorization_header(seller.access_token)
+        delete :destroy, params: { user_id: seller.id, id: old_product.id }
+        expect(json_response[:success]).to be_truthy
+      end
     end
 
     context 'when the product had many images' do

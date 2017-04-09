@@ -68,6 +68,12 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
       is_expected.to respond_with 204
     end
 
+    it 'returns a success message' do
+      api_authorization_header(user.access_token)
+      delete :destroy, format: :json
+      expect(json_response[:success]).to be_truthy
+    end
+
     it 'makes nil the access_token field' do
       api_authorization_header(user.access_token)
       delete :destroy, format: :json

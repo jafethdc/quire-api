@@ -42,16 +42,21 @@ module Api
       def destroy
         product = logged_user.products.find(params[:id])
         product.destroy
-        head 204
+        if product.destroyed?
+          render json: { success: true }, status: 204
+        else
+          render json: { success: false }
+        end
       end
 
 
       private
-        # Refactor this to have params for create and update...
-        def product_params
-          params.require(:product).permit(:name, :description, :price, :seller_id,
-                                          images_attributes: [:img_file_name, :img_base])
-        end
+
+      # Refactor this to have params for create and update...
+      def product_params
+        params.require(:product).permit(:name, :description, :price, :seller_id,
+                                        images_attributes: [:img_file_name, :img_base])
+      end
     end
   end
 end

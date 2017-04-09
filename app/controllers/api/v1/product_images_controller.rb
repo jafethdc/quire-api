@@ -24,13 +24,18 @@ module Api
         product = logged_user.products.find(params[:product_id])
         product_image = product.images.find(params[:id])
         product_image.destroy
-        head 204
+        if product_image.destroyed?
+          render json: { success: true }, status: 204
+        else
+          render json: { success: false }
+        end
       end
 
       private
-        def product_image_params
-          params.require(:product_image).permit(:img_base)
-        end
+
+      def product_image_params
+        params.require(:product_image).permit(:img_base)
+      end
     end
   end
 end

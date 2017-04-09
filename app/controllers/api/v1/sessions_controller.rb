@@ -24,22 +24,26 @@ module Api
       end
 
       def destroy
-        logged_user.update_attributes(access_token: nil)
-        head 204
+        if logged_user.update_attributes(access_token: nil)
+          render json: { success: true }, status: 204
+        else
+          render json: { success: false }
+        end
       end
 
       private
-        def create_params(fb_profile)
-          user_params.merge(access_token: generate_api_token).merge(fb_profile.slice(:email, :name))
-        end
 
-        def update_params
-          { access_token: generate_api_token, last_location: user_params[:last_location] }
-        end
+      def create_params(fb_profile)
+        user_params.merge(access_token: generate_api_token).merge(fb_profile.slice(:email, :name))
+      end
 
-        def user_params
-          params.require(:user).permit(:last_location)
-        end
+      def update_params
+        { access_token: generate_api_token, last_location: user_params[:last_location] }
+      end
+
+      def user_params
+        params.require(:user).permit(:last_location)
+      end
     end
   end
 end
