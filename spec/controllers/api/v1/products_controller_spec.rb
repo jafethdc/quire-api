@@ -129,7 +129,13 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
       it 'returns a product owned by the corresponding seller' do
         api_authorization_header(seller.access_token)
         post :create, params: { user_id: seller.id, product: product_attributes }
-        expect(json_response[:seller][:id]).to eq(seller.id)
+        expect(json_response[:product][:seller][:id]).to eq(seller.id)
+      end
+
+      it 'returns a success field' do
+        api_authorization_header(seller.access_token)
+        post :create, params: { user_id: seller.id, product: product_attributes }
+        expect(json_response[:success]).to be_truthy
       end
     end
 

@@ -24,9 +24,9 @@ module Api
       def create
         product = logged_user.products.build(product_params)
         if product.save
-          render json: product, status: 201
+          render json: { success: true, product: ProductSerializer.new(product).as_json }, status: 201
         else
-          render json: { errors: product.errors.full_messages }, status: 422
+          render json: { success: false, errors: product.errors.full_messages }, status: 422
         end
       end
 
