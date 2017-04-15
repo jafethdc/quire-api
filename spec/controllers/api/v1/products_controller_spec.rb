@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::ProductsController, type: :controller do
-  let(:seller) { FactoryGirl.create(:logged_user, preference_radius: 20000)  }
+  let(:seller) { FactoryGirl.create(:logged_user, preference_radius: 20_000) }
 
   describe 'GET #index' do
     context 'when there is no products' do
@@ -50,6 +50,13 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
         get :show, params: { user_id: other_seller.id, id: product.id }
         is_expected.to respond_with 404
       end
+    end
+
+    it 'returns the images array sorted by creation time' do
+      images_ids = product.images.create(FactoryGirl.attributes_for_list(:product_image, 2)).map(&:id)
+      get :show, params: { user_id: product.seller.id, id: product.id }
+      response_ids = json_response[:images][-2..-1].map { |i| i[:id] }
+      expect(images_ids).to eq(response_ids)
     end
   end
 

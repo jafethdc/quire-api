@@ -1,10 +1,12 @@
 class ProductSerializer < ActiveModel::Serializer
-  attributes :id, :name, :description, :price, :created_at
+  attributes :id, :name, :description, :price, :created_at, :images
   belongs_to :seller
 
   class UserSerializer < ActiveModel::Serializer
     attributes :id, :username, :email, :name
   end
 
-  has_many :images
+  def images
+    ActiveModelSerializers::SerializableResource.new(object.images.order(:created_at)).as_json
+  end
 end

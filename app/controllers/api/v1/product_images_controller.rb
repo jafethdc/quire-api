@@ -7,7 +7,7 @@ module Api
       def index
         user = User.find(params[:user_id])
         product = user.products.find(params[:product_id])
-        render json: product.images, status: 200
+        render json: product.images.order(:created_at), status: 200
       end
 
       def create
