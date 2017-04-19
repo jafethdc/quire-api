@@ -68,7 +68,7 @@ module SeedsHelpers
   end
 
   def self.setup_user(position)
-    if Rails.env.development?
+    if Rails.env.production?
       user_attrs = FBTestUsers.create
       user_attrs[:last_location] = "POINT (#{position})"
       user = FactoryGirl.create(:logged_user, user_attrs)
