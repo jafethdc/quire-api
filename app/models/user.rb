@@ -7,6 +7,7 @@ class User < ApplicationRecord
 
   validates :email, presence: true, format: { with: /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/ },
                     uniqueness: { case_sensitive: false }
+  validates :fb_user_id, presence: true
   validates :name, presence: true
   validates :last_location, presence: true
   validates :preference_radius, presence: true, numericality: { greater_than_or_equal_to: 0.0 }

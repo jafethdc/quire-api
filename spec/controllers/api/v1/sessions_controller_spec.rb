@@ -24,18 +24,18 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
     end
 
     context 'when user does not exist' do
-      let(:user_attributes) { FactoryGirl.attributes_for(:user).slice(:email, :last_location) }
+      let(:user_attributes) { FactoryGirl.attributes_for(:user).slice(:email, :last_location, :fb_user_id) }
 
       context 'when successfully logged in' do
         it 'renders the json for the just created user' do
           stub_validate_fb_user(Api::V1::SessionsController, true, email: user_attributes[:email])
-          post :create, params: { fb_access_token: '12345', user: user_attributes.slice(:last_location) }, format: :json
+          post :create, params: { fb_access_token: '12345', user: user_attributes.slice(:last_location, :fb_user_id) }, format: :json
           expect(json_response[:email]).to eql user_attributes[:email]
         end
 
         it 'renders the json for the user including the access token' do
           stub_validate_fb_user(Api::V1::SessionsController, true, email: user_attributes[:email])
-          post :create, params: { fb_access_token: '12345', user: user_attributes.slice(:last_location) }, format: :json
+          post :create, params: { fb_access_token: '12345', user: user_attributes.slice(:last_location, :fb_user_id) }, format: :json
           expect(json_response[:access_token]).not_to be_nil
         end
       end

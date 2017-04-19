@@ -28,9 +28,10 @@ module Api
       end
 
       private
-        def user_params
-          params.require(:user).permit(:username, :last_location, :preference_radius)
-        end
+
+      def user_params
+        params.require(:user).permit(:username, :last_location, :preference_radius, :fb_user_id)
+      end
     end
   end
 end

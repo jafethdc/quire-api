@@ -42,7 +42,7 @@ module Api
       end
 
       def user_params
-        params.require(:user).permit(:last_location)
+        params.require(:user).permit(:last_location, :fb_user_id)
       end
     end
   end

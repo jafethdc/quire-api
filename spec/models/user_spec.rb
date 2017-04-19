@@ -12,6 +12,10 @@ RSpec.describe User, type: :model do
     it { expect(user).not_to allow_value('examplexdomain.com').for(:email) }
   end
 
+  describe '#fb_user_id' do
+    it { expect(user).to validate_presence_of(:fb_user_id) }
+  end
+
   describe '#name' do
     it { expect(user).to validate_presence_of(:name) }
   end
