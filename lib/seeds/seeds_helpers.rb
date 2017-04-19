@@ -60,9 +60,9 @@ module SeedsHelpers
 
     def self.create_user(user)
       headers = { 'Content-Type' => 'application/json, charset=utf8', 'Api-Token' => ENV['SENDBIRD_API_TOKEN'] }
-      body = { user_id: user.id, nickname: user.name, profile_url: '' }
+      body = { user_id: user.id.to_s, nickname: user.name, profile_url: '' }
       url = BASE_URL + 'users'
-      response = HTTParty.post(url, headers: headers, body: body)
+      response = HTTParty.post(url, headers: headers, body: body.to_json)
       response.code == 200
     end
   end
