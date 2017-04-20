@@ -10,11 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170416202352) do
+ActiveRecord::Schema.define(version: 20170419054316) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "postgis"
+
+  create_table "chats", force: :cascade do |t|
+    t.integer  "creator_id"
+    t.integer  "product_id"
+    t.string   "url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["creator_id"], name: "index_chats_on_creator_id", using: :btree
+    t.index ["product_id"], name: "index_chats_on_product_id", using: :btree
+  end
 
   create_table "product_images", force: :cascade do |t|
     t.integer  "product_id"

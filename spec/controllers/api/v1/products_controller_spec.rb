@@ -94,6 +94,17 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
       get :nearby, params: { user_id: seller.id }
       is_expected.to respond_with 200
     end
+
+    context 'when there are products with chats created' do
+      it 'includes the chat url in the product' do
+        nearby_product = seller.nearby_products.first
+        chat = FactoryGirl.create(:chat, creator_id: seller.id, product_id: nearby_product.id)
+        api_authorization_header(seller.access_token)
+        get :nearby, params: { user_id: seller.id }
+        response_product = json_response.find { |p| p[:id] == nearby_product.id }
+        expect(response_product[:chat_url]).to eq chat.url
+      end
+    end
   end
 
   describe 'POST #create' do

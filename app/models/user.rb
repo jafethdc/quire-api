@@ -4,6 +4,7 @@ class User < ApplicationRecord
   after_initialize :set_defaults, unless: :persisted?
 
   has_many :products, inverse_of: :seller, foreign_key: 'seller_id', dependent: :destroy
+  has_many :chats, inverse_of: :creator, foreign_key: 'creator_id'
 
   validates :email, presence: true, format: { with: /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/ },
                     uniqueness: { case_sensitive: false }

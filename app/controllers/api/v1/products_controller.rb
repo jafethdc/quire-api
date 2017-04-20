@@ -17,8 +17,9 @@ module Api
       end
 
       def nearby
+        serializer = ActiveModelSerializers::SerializableResource
         nearby_products = logged_user.nearby_products.paginate(page: params[:page], per_page: params[:per_page])
-        render json: nearby_products, status: 200
+        render json: serializer.new(nearby_products, scope: logged_user).as_json, status: 200
       end
 
       def create
