@@ -3,7 +3,6 @@ require 'rails_helper'
 RSpec.describe Api::V1::SessionsController, type: :controller do
 
   describe 'POST #create' do
-
     context 'when user exists' do
       let(:user) { FactoryGirl.create(:user) }
 
@@ -23,7 +22,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
     end
 
     context 'when user does not exist' do
-      let(:user_attributes) { FactoryGirl.attributes_for(:user).slice(:email, :last_location) }
+      let(:user_attributes) { FactoryGirl.attributes_for(:user) }
 
       context 'when successfully logged in' do
         it 'renders the json for the just created user' do

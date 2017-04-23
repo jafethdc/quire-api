@@ -6,7 +6,7 @@ Rails.application.routes.draw do
       resources :users, only: [:update] do
         get '/products/nearby', to: 'products#nearby'
         resources :products do
-          resources :product_images, only: [:index, :create, :destroy]
+          resources :images, controller: 'product_images', only: [:index, :create, :destroy]
         end
       end
 

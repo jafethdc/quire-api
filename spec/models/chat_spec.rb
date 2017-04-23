@@ -11,6 +11,11 @@ RSpec.describe Chat, type: :model do
 
   describe '#creator' do
     it { expect(chat).to validate_presence_of(:creator) }
+
+    it 'validates the members are different' do
+      chat.creator = chat.product.seller
+      expect(chat).not_to be_valid
+    end
   end
 
   describe '#url' do

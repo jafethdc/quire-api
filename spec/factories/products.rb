@@ -1,18 +1,22 @@
 FactoryGirl.define do
-  factory :product_basic, class: Product do
+  factory :product do
+    transient do
+      images_count 2
+    end
+
     name { FFaker::Product.product_name }
     description { FFaker::Lorem.paragraph }
     price { rand(0..500) }
     association :seller, factory: :user
 
-    factory :product do
-      after(:build) do |product, _|
-        product.images.build(FactoryGirl.attributes_for_list(:product_image_skipped, rand(1..3)))
+    after(:build) do |product, evaluator|
+      unless evaluator.images_count == 0
+        product.images.build(FactoryGirl.attributes_for_list(:product_image, evaluator.images_count))
       end
     end
 
-    factory :product_skipped do
-      to_create { |instance| instance.save(validate: false) }
+    to_create do |instance|
+      instance.save(validate: instance.images.any?)
     end
   end
 end

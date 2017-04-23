@@ -8,7 +8,7 @@ module Api
         user = User.find_by_email(fb_profile[:email])
         if user
           if user.access_token.nil?
-            user.update_attributes(update_params)
+            user.update(update_params)
             render json: user, status: 200
           else
             render json: { errors: ['Session already exists'] }, status: 422
@@ -24,7 +24,7 @@ module Api
       end
 
       def destroy
-        if logged_user.update_attributes(access_token: nil)
+        if logged_user.update(access_token: nil)
           render json: { success: true }
         else
           render json: { success: false }

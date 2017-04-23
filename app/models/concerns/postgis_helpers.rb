@@ -1,14 +1,6 @@
 module PostgisHelpers
-  module NamedFunctions
-    NamedFunction = Arel::Nodes::NamedFunction
-
-    def geometry(arg)
-      NamedFunction.new('Geometry',[arg])
-    end
-
-    def st_distance_sphere(point1,point2)
-      NamedFunction.new('ST_DistanceSphere', [point1, point2])
-    end
+  module Arel
+    NamedFunction = ::Arel::Nodes::NamedFunction
 
     def st_geogfromtext(point)
       NamedFunction.new('ST_GeogFromText', [point])
@@ -17,21 +9,16 @@ module PostgisHelpers
     def st_dwithin(point1, point2, radius)
       NamedFunction.new('ST_DWithin', [point1, point2, radius])
     end
-  end
 
-  include NamedFunctions
+    def distance_within(point, table_field, radius)
+      ewkt_quoted = ::Arel::Nodes::Quoted.new(ewkt(point))
+      st_dwithin(st_geogfromtext(ewkt_quoted), table_field, radius)
+    end
 
-  Quoted = Arel::Nodes::Quoted
-
-  def ewkt(point)
-    "SRID=#{point.srid}\;#{point.as_text}"
-  end
-
-  def distance_sphere(point, table_field)
-    st_distance_sphere(ewkt(point), geometry(table_field))
-  end
-
-  def distance_within(point, table_field, radius)
-    st_dwithin(st_geogfromtext(Quoted.new(ewkt(point))), table_field, radius)
+    # @param point: A RGeo::Geographic::SphericalPointImpl object
+    # @return An ewkt formatted point
+    def ewkt(point)
+      "SRID=#{point.srid}\;#{point.as_text}"
+    end
   end
 end

@@ -6,7 +6,7 @@ module Api
 
       def index
         user = User.find(params[:user_id])
-        products = user.products.paginate(page: params[:page], per_page: params[:per_page])
+        products = user.products.paginate(paginate_params).includes(:images)
         render json: products, status: 200
       end
 
@@ -18,7 +18,7 @@ module Api
 
       def nearby
         serializer = ActiveModelSerializers::SerializableResource
-        nearby_products = logged_user.nearby_products.paginate(page: params[:page], per_page: params[:per_page])
+        nearby_products = logged_user.nearby_products.paginate(paginate_params).includes(:images)
         render json: serializer.new(nearby_products, scope: logged_user).as_json, status: 200
       end
 
@@ -50,13 +50,16 @@ module Api
         end
       end
 
-
       private
 
       # Refactor this to have params for create and update...
       def product_params
         params.require(:product).permit(:name, :description, :price, :seller_id,
-                                        images_attributes: [:img_file_name, :img_base])
+                                        images_attributes: [:img_base])
+      end
+
+      def paginate_params
+        { page: params[:page], per_page: params[:per_page] }
       end
     end
   end

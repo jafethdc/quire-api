@@ -25,7 +25,7 @@ RSpec.describe Api::V1::ProductImagesController, type: :controller do
         api_authorization_header(seller.access_token)
         post :create, params: { product_image:  product_image_attrs,
                                 product_id:     product.id,
-                                user_id:        seller.id  }
+                                user_id:        seller.id }
         expect(json_response[:url]).not_to be_nil
       end
 
@@ -33,7 +33,7 @@ RSpec.describe Api::V1::ProductImagesController, type: :controller do
         api_authorization_header(seller.access_token)
         post :create, params: { product_image:  product_image_attrs,
                                 product_id:     product.id,
-                                user_id:        seller.id  }
+                                user_id:        seller.id }
         is_expected.to respond_with 201
       end
     end
@@ -45,7 +45,7 @@ RSpec.describe Api::V1::ProductImagesController, type: :controller do
         api_authorization_header(seller.access_token)
         post :create, params: { product_image:  product_image_attrs,
                                 product_id:     product.id,
-                                user_id:        seller.id  }
+                                user_id:        seller.id }
         is_expected.to respond_with 422
       end
     end

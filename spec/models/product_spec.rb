@@ -29,7 +29,7 @@ RSpec.describe Product, type: :model do
   describe '#destroy' do
     it 'destroys all the associated images' do
       product = FactoryGirl.create(:product)
-      images_ids = product.images.map { |i| i.id }
+      images_ids = product.images.map(&:id)
       product.destroy
       expect(ProductImage.where(id: images_ids)).to be_empty
     end
@@ -56,7 +56,7 @@ RSpec.describe Product, type: :model do
       products_sequence = Product.all.paginate(page: 1, per_page: 8)
       products_sequence1 = Product.all.paginate(page: 1, per_page: 4)
       products_sequence2 = Product.all.paginate(page: 2, per_page: 4)
-      expect(products_sequence).to eq(products_sequence1+products_sequence2)
+      expect(products_sequence).to eq(products_sequence1 + products_sequence2)
     end
   end
 end

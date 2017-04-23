@@ -7,7 +7,8 @@ class ProductSerializer < ActiveModel::Serializer
   end
 
   def images
-    ActiveModelSerializers::SerializableResource.new(object.images.order(:created_at)).as_json
+    images = object.images.sort_by(&:created_at)
+    ActiveModelSerializers::SerializableResource.new(images).as_json
   end
 
   def chat_url

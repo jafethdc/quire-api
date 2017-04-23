@@ -12,11 +12,10 @@ module Api
 
       def create
         product = logged_user.products.find(params[:product_id])
-        product_image = product.images.build(product_image_params)
-        if product_image.save
-          render json: product_image, status: 201
+        if product.update(images_attributes: [product_image_params])
+          render json: product.images.last, status: 201
         else
-          render json: product_image.errors.full_messages, status: 422
+          render json: product.errors.full_messages, status: 422
         end
       end
 

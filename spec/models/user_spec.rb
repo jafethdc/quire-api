@@ -64,7 +64,7 @@ RSpec.describe User, type: :model do
   describe '#destroy' do
     it "destroys all the user's products" do
       user = FactoryGirl.create(:user)
-      products_ids = FactoryGirl.create_list(:product, 3, seller_id: user.id).map { |p| p.id }
+      products_ids = FactoryGirl.create_list(:product, 3, seller_id: user.id).map(&:id)
       user.destroy
       expect(Product.where(id: products_ids)).to be_empty
     end
