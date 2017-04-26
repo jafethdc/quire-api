@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::ProductsController, type: :controller do
-  let(:seller) { FactoryGirl.create(:logged_user, preference_radius: 20_000) }
+  let(:seller) { FactoryGirl.create(:logged_user, last_location: 'POINT (-26.243011 -61.846379)') }
 
   describe 'GET #index' do
     context 'when there is no products' do
@@ -61,9 +61,9 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
   end
 
   describe 'GET #nearby' do
-    let!(:user) { FactoryGirl.create(:logged_user, last_location: rand_point_within(seller.last_location, seller.preference_radius)) }
+    let!(:user) { FactoryGirl.create(:logged_user, last_location: 'POINT (-26.247443 -61.946259)') }
     let!(:product_list) { FactoryGirl.create_list(:product, 3, seller_id: user.id) }
-    let!(:user2) { FactoryGirl.create(:logged_user, last_location: rand_point_within(seller.last_location, seller.preference_radius + 4000)) }
+    let!(:user2) { FactoryGirl.create(:logged_user, last_location: 'POINT (-26.466265 -61.780272)') }
     let!(:product_list2) { FactoryGirl.create_list(:product, 4, seller_id: user2.id) }
 
     it 'returns the products within the right area' do
@@ -74,10 +74,10 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
 
     context 'when some users get closer' do
       it 'returns more products within the right area' do
-        user2.update_attribute('last_location', rand_point_within(seller.last_location, seller.preference_radius))
+        user2.update_attribute('last_location', 'POINT (-26.247443 -61.946259)')
         api_authorization_header(seller.access_token)
         get :nearby, params: { user_id: seller.id }
-        expect(json_response.size).to eq(product_list.size+product_list2.size)
+        expect(json_response.size).to eq(product_list.size + product_list2.size)
       end
     end
 
@@ -97,7 +97,7 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
 
     context 'when there are products with chats created' do
       it 'includes the chat url in the product' do
-        nearby_product = seller.nearby_products.first
+        nearby_product = seller.nearby_products.take
         chat = FactoryGirl.create(:chat, creator_id: seller.id, product_id: nearby_product.id)
         api_authorization_header(seller.access_token)
         get :nearby, params: { user_id: seller.id }
@@ -119,7 +119,7 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
         images_count = product_attributes[:images_attributes].size
         api_authorization_header(seller.access_token)
         post :create, params: { user_id: seller.id, product: product_attributes }
-        expect(ProductImage.count).to eq(count_before+images_count)
+        expect(ProductImage.count).to eq(count_before + images_count)
       end
 
       it 'returns 201' do

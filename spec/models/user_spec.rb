@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  let(:user) { FactoryGirl.build(:user) }
+  let(:user) { FactoryGirl.build(:user, last_location: 'POINT (-41.402937 -27.395901)') }
 
   it { expect(user).to be_valid }
 
@@ -44,20 +44,34 @@ RSpec.describe User, type: :model do
 
   describe '#nearby_users' do
     it 'returns the user located within a given radius' do
-      user = FactoryGirl.create(:user)
-      FactoryGirl.create_list(:user, 2, last_location: rand_point_within(user.last_location, user.preference_radius))
+      FactoryGirl.create_list(:user, 2, last_location: 'POINT (-41.52072 -27.36811)')
       expect(user.nearby_users.size).to eq(2)
     end
   end
 
   describe '#nearby_products' do
     it "returns the nearby users' products" do
-      user = FactoryGirl.create(:user)
-      nearby_users = FactoryGirl.create_list(:user, 2, last_location: rand_point_within(user.last_location,
-                                                                                        user.preference_radius))
+      nearby_users = FactoryGirl.create_list(:user, 2, last_location: 'POINT (-41.52072 -27.36811)')
       FactoryGirl.create_list(:product, 3, seller_id: nearby_users.first.id)
       FactoryGirl.create_list(:product, 2, seller_id: nearby_users.second.id)
       expect(user.nearby_products.size).to eq(5)
+    end
+
+    it 'filters out the products with a skip flag' do
+      user.save
+      nearby_user = FactoryGirl.create(:user, last_location: 'POINT (-41.52072 -27.36811)')
+      products = FactoryGirl.create_list(:product, 3, seller_id: nearby_user.id)
+      ProductUser.create user_id: user.id, product_id: products.sample.id, skip: true
+      expect(user.nearby_products.size).to eq(2)
+    end
+  end
+
+  describe '#wished_products' do
+    it 'returns the products added to the wishlist by the user' do
+      user.save
+      products = FactoryGirl.create_list(:product, 2)
+      ProductUser.create user_id: user.id, product_id: products.sample.id, wish: true
+      expect(user.wished_products.size).to eq(1)
     end
   end
 

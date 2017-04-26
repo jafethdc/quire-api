@@ -4,7 +4,7 @@ module Api
       before_action :authenticate_with_token, only: [:create]
 
       def create
-        chat = Chat.new(chat_params)
+        chat = Chat.new(chat_params.merge(creator_id: logged_user.id))
         if chat.save
           render json: chat, status: 201
         else
@@ -15,7 +15,7 @@ module Api
       private
 
       def chat_params
-        params.require(:chat).permit(:creator_id, :product_id, :url)
+        params.require(:chat).permit(:product_id, :url)
       end
     end
   end

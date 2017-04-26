@@ -10,7 +10,12 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :chats, only: [:create]
+      scope '/me' do
+        resources :wished_products, only: [:index, :create, :destroy]
+
+        post '/skipped_products', to: 'skipped_products#create'
+        post '/chats', to: 'chats#create'
+      end
 
       post    '/sessions', to: 'sessions#create'
       delete  '/sessions', to: 'sessions#destroy'

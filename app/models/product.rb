@@ -2,6 +2,7 @@ class Product < ApplicationRecord
   has_many :images, inverse_of: :product, class_name: 'ProductImage', dependent: :destroy
   belongs_to :seller, class_name: 'User', inverse_of: :products
   has_many :chats, inverse_of: :product
+  has_many :product_users, inverse_of: :product
 
   accepts_nested_attributes_for :images
 
