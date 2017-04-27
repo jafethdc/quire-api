@@ -11,7 +11,7 @@ module Api
       end
 
       def create
-        if product_user.update wish: true
+        if product_user.update wish: true, skip: true
           render json: { success: true }, status: 201
         else
           render json: { success: false }, status: 422
@@ -19,7 +19,7 @@ module Api
       end
 
       def destroy
-        if product_user.update wish: false
+        if product_user.update wish: false, skip: false
           render json: { success: true }
         else
           render json: { success: false }

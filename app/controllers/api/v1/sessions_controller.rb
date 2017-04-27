@@ -7,11 +7,10 @@ module Api
         fb_profile = validate_fb_user(params[:fb_access_token])
         user = User.find_by_email(fb_profile[:email])
         if user
-          if user.access_token.nil?
-            user.update(update_params)
+          if user.update(update_params)
             render json: user, status: 200
           else
-            render json: { errors: ['Session already exists'] }, status: 422
+            render json: { errors: user.errors.full_messages }, status: 422
           end
         else
           user = User.new(create_params(fb_profile))

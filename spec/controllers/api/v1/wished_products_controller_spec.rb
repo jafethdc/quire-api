@@ -20,6 +20,14 @@ RSpec.describe Api::V1::WishedProductsController, type: :controller do
       expect(json_response[:success]).to be_truthy
     end
 
+    it "set the productuser's skip flag to true" do
+      api_authorization_header(user.access_token)
+      product = products.sample
+      post :create, params: { wished_product: { product_id: product.id } }
+      product_user = ProductUser.find_by(product_id: product.id, user_id: user.id)
+      expect(product_user.skip).to be_truthy
+    end
+
     context 'when a productuser does not exist' do
 
       context 'when product and user are valid' do

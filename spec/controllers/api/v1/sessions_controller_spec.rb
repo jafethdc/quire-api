@@ -19,6 +19,16 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
           is_expected.to respond_with 200
         end
       end
+
+      context 'when already logged in' do
+        it 'regenerates the access token' do
+          stub_validate_fb_user(Api::V1::SessionsController, true, email: user.email)
+          post :create, params: { fb_access_token: '12345', user: { last_location: 'POINT (-78.00 12.3)' } }, format: :json
+          old_token = json_response[:access_token]
+          post :create, params: { fb_access_token: '12345', user: { last_location: 'POINT (78.00 -12.3)' } }, format: :json
+          expect(JSON.parse(response.body, symbolize_names: true)[:access_token]).not_to eq(old_token)
+        end
+      end
     end
 
     context 'when user does not exist' do

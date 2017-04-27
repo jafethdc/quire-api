@@ -15,7 +15,7 @@ module Api
         if product.update(images_attributes: [product_image_params])
           render json: product.images.last, status: 201
         else
-          render json: product.errors.full_messages, status: 422
+          render json: { errors: product.errors.full_messages }, status: 422
         end
       end
 

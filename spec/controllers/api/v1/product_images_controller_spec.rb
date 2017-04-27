@@ -49,6 +49,27 @@ RSpec.describe Api::V1::ProductImagesController, type: :controller do
         is_expected.to respond_with 422
       end
     end
+
+    context 'when the product has too many images' do
+      let(:product) { FactoryGirl.create(:product, images_count: 5, seller_id: seller.id) }
+      let(:image_attrs) { FactoryGirl.attributes_for(:product_image) }
+
+      it 'returns 422' do
+        api_authorization_header(seller.access_token)
+        post :create, params: { product_image:  image_attrs,
+                                product_id:     product.id,
+                                user_id:        seller.id }
+        is_expected.to respond_with 422
+      end
+
+      it 'returns an errors array' do
+        api_authorization_header(seller.access_token)
+        post :create, params: { product_image:  image_attrs,
+                                product_id:     product.id,
+                                user_id:        seller.id }
+        expect(json_response[:errors].size).not_to eq(0)
+      end
+    end
   end
 
   describe 'DELETE #destroy' do
