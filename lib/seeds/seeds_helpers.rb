@@ -32,7 +32,9 @@ module SeedsHelpers
 
     def self.products
       site_id = 'MPE'
-      url = BASE_URL + "sites/#{site_id}/hot_items/search"
+      category_id = 'MPE1648'
+      limit = 100
+      url = BASE_URL + "sites/#{site_id}/search?category=#{category_id}&limit=#{limit}"
       response = HTTParty.get(url)
       products = JSON.parse(response.body, symbolize_names: true)[:results]
       products.map { |p| single_product(p[:id]) }
