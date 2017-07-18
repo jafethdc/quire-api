@@ -76,6 +76,7 @@ GEM
       thor (~> 0.14)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
+    hirb (0.7.3)
     httparty (0.14.0)
       multi_xml (>= 0.5.2)
     i18n (0.7.0)
@@ -201,6 +202,7 @@ DEPENDENCIES
   factory_girl_rails
   ffaker
   figaro
+  hirb (~> 0.7.3)
   httparty
   koala (~> 2.2)
   listen (~> 3.0.5)
@@ -216,4 +218,4 @@ DEPENDENCIES
   will_paginate (~> 3.1.0)
 
 BUNDLED WITH
-   1.14.5
+   1.14.6
