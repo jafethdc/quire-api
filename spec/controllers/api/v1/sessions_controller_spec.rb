@@ -18,6 +18,12 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
           post :create, params: { fb_access_token: '12345', user: { last_location: 'POINT (-78.00 12.3)' } }, format: :json
           is_expected.to respond_with 200
         end
+
+        it 'updates the fb access token' do
+          stub_validate_fb_user(Api::V1::SessionsController, true, email: user.email)
+          post :create, params: { fb_access_token: '12345', user: { last_location: 'POINT (-78.00 12.3)' } }, format: :json
+          expect(User.find_by(email: user.email).fb_access_token).to eq('12345')
+        end
       end
 
       context 'when already logged in' do
