@@ -47,7 +47,20 @@ class User < ApplicationRecord
     Product.joins(product_user_join).where(product_user[:wish].eq(true))
   end
 
+  def profile_picture
+    @@profile_pics ||= {}
+    @@profile_pics[id] ||= fb_profile_picture
+  end
+
   private
+
+  def fb_profile_picture
+    return nil if fb_access_token.blank?
+    graph = Koala::Facebook::API.new(fb_access_token)
+    profile = graph.get_object('me', fields: 'picture.type(normal)')
+    profile = profile.deep_symbolize_keys
+    profile.dig(:picture, :data, :url)
+  end
 
   def set_defaults
     self.preference_radius ||= 15_000

@@ -34,11 +34,11 @@ module Api
 
       def create_params(fb_profile)
         user_params.merge(access_token: generate_api_token, email: fb_profile[:email],
-                          name: fb_profile[:name], fb_user_id: fb_profile[:id])
+                          name: fb_profile[:name], fb_user_id: fb_profile[:id], fb_access_token: params[:access_token])
       end
 
       def update_params
-        { access_token: generate_api_token, last_location: user_params[:last_location] }
+        { access_token: generate_api_token, last_location: user_params[:last_location], fb_access_token: params[:access_token]}
       end
 
       def user_params

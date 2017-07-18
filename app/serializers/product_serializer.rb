@@ -3,7 +3,7 @@ class ProductSerializer < ActiveModel::Serializer
   belongs_to :seller
 
   class UserSerializer < ActiveModel::Serializer
-    attributes :id, :username, :fb_user_id, :email, :name
+    attributes :id, :username, :fb_user_id, :email, :name, :profile_picture
   end
 
   def images

@@ -72,6 +72,12 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
       expect(json_response.size).to be >= product_list.size
     end
 
+    it 'returns each products seller image' do
+      api_authorization_header(seller.access_token)
+      get :nearby, params: { user_id: seller.id }
+      expect(json_response.first[:seller][:profile_picture]).not_to be_nil
+    end
+
     context 'when some users get closer' do
       it 'returns more products within the right area' do
         user2.update_attribute('last_location', 'POINT (-26.247443 -61.946259)')

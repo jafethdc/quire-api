@@ -15,6 +15,7 @@ module SeedsHelpers
       graph_api = FB::API.new(user['access_token'])
       data = graph_api.get_object('me', fields: 'id,name,email')
       data['fb_user_id'] = data.delete 'id'
+      data['fb_access_token'] = user['access_token']
       data.symbolize_keys
     end
   end

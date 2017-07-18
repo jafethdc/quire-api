@@ -61,6 +61,9 @@ RSpec.configure do |config|
   config.include Faker::GeographicHelpers
   config.include Faker::ImageHelpers
   config.include StubHelpers
+  config.before(:example) do
+    allow_any_instance_of(User).to receive(:profile_picture).and_return('https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/10354686_10150004552801856_220367501106153455_n.jpg?oh=b607b68bceb725319743396142d0768d&oe=5A040E73')
+  end
 
 end
 
