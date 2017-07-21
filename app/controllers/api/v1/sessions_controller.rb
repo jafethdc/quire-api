@@ -38,7 +38,7 @@ module Api
         user_params.merge(access_token: generate_api_token, email: fb_profile[:email],
                           name: fb_profile[:name],          fb_user_id: fb_profile[:id],
                           fb_access_token: params[:fb_access_token],
-                          profile_picture_base: ImagesHelpers.url_to_base64(fb_profile.dig(:picture, :data, :url)))
+                          profile_picture_base: ImagesHelpers.url_to_base64(fb_profile[:picture][:data ][:url]))
       end
 
       def update_params

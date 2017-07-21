@@ -17,7 +17,7 @@ module SeedsHelpers
       data = graph_api.get_object('me', fields: 'id,name,email,picture.type(normal)')
       data['fb_user_id'] = data.delete 'id'
       data['fb_access_token'] = user['access_token']
-      data['profile_picture_base'] = ImagesHelpers.url_to_base64(data.dig('picture', 'data', 'url'))
+      data['profile_picture_base'] = ImagesHelpers.url_to_base64(data['picture']['data']['url'])
       data.delete('picture')
       data.symbolize_keys
     end
