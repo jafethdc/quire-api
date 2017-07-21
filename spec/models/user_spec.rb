@@ -42,6 +42,35 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe '#parse_profile_picture' do
+    context 'when profile picture base is provided' do
+      it 'parses the profile picture' do
+        user = FactoryGirl.build(:user)
+        user.valid?
+        expect(user.profile_picture.blank?).not_to be_truthy
+      end
+    end
+
+    context 'when profile picture base is not provided' do
+      it 'sets the profile picture to blank' do
+        user = FactoryGirl.build(:user, profile_picture_base: nil)
+        user.valid?
+        expect(user.profile_picture.blank?).to be_truthy
+      end
+    end
+
+  end
+
+  describe '#update' do
+    context 'when profile picture base is not provided' do
+      it 'does not change the profile picture' do
+        user = FactoryGirl.create(:user)
+        user.update(profile_picture_base: nil)
+        expect(user.profile_picture.blank?).not_to be_truthy
+      end
+    end
+  end
+
   describe '#nearby_users' do
     it 'returns the user located within a given radius' do
       FactoryGirl.create_list(:user, 2, last_location: 'POINT (-41.52072 -27.36811)')

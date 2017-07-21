@@ -4,6 +4,10 @@ class ProductSerializer < ActiveModel::Serializer
 
   class UserSerializer < ActiveModel::Serializer
     attributes :id, :username, :fb_user_id, :email, :name, :profile_picture
+
+    def profile_picture
+      object.profile_picture.url
+    end
   end
 
   def images

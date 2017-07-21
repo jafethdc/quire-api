@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170717172741) do
+ActiveRecord::Schema.define(version: 20170721213224) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -60,15 +60,19 @@ ActiveRecord::Schema.define(version: 20170717172741) do
 
   create_table "users", force: :cascade do |t|
     t.string    "username"
-    t.string    "email",                                                                      null: false
-    t.string    "name",                                                                       null: false
-    t.geography "last_location",     limit: {:srid=>4326, :type=>"point", :geographic=>true}
+    t.string    "email",                                                                                 null: false
+    t.string    "name",                                                                                  null: false
+    t.geography "last_location",                limit: {:srid=>4326, :type=>"point", :geographic=>true}
     t.string    "access_token"
-    t.datetime  "created_at",                                                                 null: false
-    t.datetime  "updated_at",                                                                 null: false
+    t.datetime  "created_at",                                                                            null: false
+    t.datetime  "updated_at",                                                                            null: false
     t.integer   "preference_radius"
     t.string    "fb_user_id"
     t.string    "fb_access_token"
+    t.string    "profile_picture_file_name"
+    t.string    "profile_picture_content_type"
+    t.integer   "profile_picture_file_size"
+    t.datetime  "profile_picture_updated_at"
   end
 
 end

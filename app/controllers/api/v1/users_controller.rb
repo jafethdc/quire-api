@@ -15,7 +15,7 @@ module Api
       private
 
       def user_params
-        params.require(:user).permit(:username, :last_location, :preference_radius, :fb_user_id)
+        params.require(:user).permit(:username, :name, :last_location, :preference_radius, :profile_picture_base)
       end
     end
   end

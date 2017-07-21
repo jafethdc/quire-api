@@ -4,7 +4,8 @@ module StubHelpers
       profile = {
         id: '115896442242452',
         name: 'Carol Aladffbijbaab Thurnberg',
-        email: 'lragnuasqf_1482606515@tfbnw.net'
+        email: 'lragnuasqf_1482606515@tfbnw.net',
+        picture: { data: { url: 'https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/10354686_10150004552801856_220367501106153455_n.jpg?oh=b607b68bceb725319743396142d0768d&oe=5A040E73' } }
       }.merge(extra_fields)
       allow_any_instance_of(clazz).to receive(:validate_fb_user).and_return(profile)
     else

@@ -10,6 +10,7 @@ FactoryGirl.define do
     fb_user_id      { rand(999_999).to_s }
     name            { FFaker::Name.name }
     last_location   { rand_point.as_text }
+    profile_picture_base { random_base64_image}
 
     factory :logged_user do
       access_token { generate_api_token }

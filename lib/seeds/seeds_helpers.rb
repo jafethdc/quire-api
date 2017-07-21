@@ -4,6 +4,7 @@ require 'open-uri'
 require 'base64'
 require 'ffaker'
 require 'factory_girl'
+require File.join(Rails.root, 'lib', 'images', 'images_helpers.rb')
 
 module SeedsHelpers
   module FBTestUsers
@@ -13,9 +14,11 @@ module SeedsHelpers
       test_users = FB::TestUsers.new(app_id: ENV['FB_APP_ID'], secret: ENV['FB_SECRET'])
       user = test_users.create(true, 'public_profile,email')
       graph_api = FB::API.new(user['access_token'])
-      data = graph_api.get_object('me', fields: 'id,name,email')
+      data = graph_api.get_object('me', fields: 'id,name,email,picture.type(normal)')
       data['fb_user_id'] = data.delete 'id'
       data['fb_access_token'] = user['access_token']
+      data['profile_picture_base'] = ImagesHelpers.url_to_base64(data.dig('picture', 'data', 'url'))
+      data.delete('picture')
       data.symbolize_keys
     end
   end
@@ -50,10 +53,7 @@ module SeedsHelpers
 
     def self.build_images_attrs(images)
       images.map do |img|
-        response = open(img[:secure_url])
-        file_type = response.meta['content-type']
-        b64 = Base64.strict_encode64(response.read)
-        { img_base: "data:#{file_type};base64,#{b64}" }
+        { img_base: ImagesHelpers.url_to_base64(img[:secure_url]) }
       end
     end
   end

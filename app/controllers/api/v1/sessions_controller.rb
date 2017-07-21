@@ -1,3 +1,5 @@
+require File.join(Rails.root, 'lib', 'images', 'images_helpers.rb')
+
 module Api
   module V1
     class SessionsController < ApplicationController
@@ -34,7 +36,9 @@ module Api
 
       def create_params(fb_profile)
         user_params.merge(access_token: generate_api_token, email: fb_profile[:email],
-                          name: fb_profile[:name], fb_user_id: fb_profile[:id], fb_access_token: params[:fb_access_token])
+                          name: fb_profile[:name],          fb_user_id: fb_profile[:id],
+                          fb_access_token: params[:fb_access_token],
+                          profile_picture_base: ImagesHelpers.url_to_base64(fb_profile.dig(:picture, :data, :url)))
       end
 
       def update_params

@@ -1,4 +1,3 @@
-
 class User < ApplicationRecord
   include PostgisHelpers::Arel
 
@@ -7,6 +6,13 @@ class User < ApplicationRecord
   has_many :products, inverse_of: :seller, foreign_key: 'seller_id', dependent: :destroy
   has_many :chats, inverse_of: :creator, foreign_key: 'creator_id'
   has_many :product_users, inverse_of: :user
+
+  has_attached_file :profile_picture, styles: { medium: '300x300>', thumb: '100x100>' }
+  validates :profile_picture, attachment_presence: true
+  do_not_validate_attachment_file_type :profile_picture
+
+  attr_accessor :profile_picture_base
+  before_validation :parse_profile_picture, if: :should_parse?
 
   validates :email, presence: true, format: { with: /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/ },
                     uniqueness: { case_sensitive: false }
@@ -47,22 +53,17 @@ class User < ApplicationRecord
     Product.joins(product_user_join).where(product_user[:wish].eq(true))
   end
 
-  def profile_picture
-    @@profile_pics ||= {}
-    @@profile_pics[id] ||= fb_profile_picture
-  end
-
   private
 
-  def fb_profile_picture
-    return nil if fb_access_token.blank?
-    graph = Koala::Facebook::API.new(fb_access_token)
-    profile = graph.get_object('me', fields: 'picture.type(normal)')
-    profile = profile.deep_symbolize_keys
-    profile.dig(:picture, :data, :url)
+  def should_parse?
+    profile_picture_base.present? || new_record?
   end
 
   def set_defaults
     self.preference_radius ||= 15_000
+  end
+
+  def parse_profile_picture
+    self.profile_picture = Paperclip.io_adapters.for(profile_picture_base)
   end
 end
