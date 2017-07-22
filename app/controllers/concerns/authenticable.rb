@@ -28,7 +28,7 @@ module Authenticable
   def validate_fb_user(access_token)
     graph = Koala::Facebook::API.new(access_token)
     profile = graph.get_object('me', fields: 'id,name,email,picture.type(normal)')
-    profile.symbolize_keys
+    profile.deep_symbolize_keys
   end
 
   def generate_api_token
