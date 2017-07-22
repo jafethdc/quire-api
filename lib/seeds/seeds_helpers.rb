@@ -30,8 +30,11 @@ module SeedsHelpers
       @products ||= products
     end
 
-    def self.sample
-      all.sample
+    def self.next
+      @index ||= 0
+      p = all.at(@index)
+      @index = @index < all.length - 1 ? @index.next : 0
+      p
     end
 
     def self.products
@@ -78,7 +81,7 @@ module SeedsHelpers
 
       SendBird.create_user(user)
 
-      user.products.create(Array.new(rand(1..3)) { FactoryGirl.attributes_for(:product, MLProducts.sample) })
+      user.products.create(Array.new(rand(1..3)) { FactoryGirl.attributes_for(:product, MLProducts.next) })
     else
       user = FactoryGirl.create(:logged_user, last_location: "POINT (#{position})")
       user.products.create(Array.new(rand(1..3)) do

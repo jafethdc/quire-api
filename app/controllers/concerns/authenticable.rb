@@ -25,7 +25,7 @@ module Authenticable
     @current_user.present?
   end
 
-  def validate_fb_user(access_token)
+  def fetch_fb_profile(access_token)
     graph = Koala::Facebook::API.new(access_token)
     profile = graph.get_object('me', fields: 'id,name,email,picture.type(normal)')
     profile.deep_symbolize_keys

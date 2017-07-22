@@ -14,9 +14,8 @@ module Api
 
       private
 
-
       def ensure_product_user_existence
-        pu_params = { user_id: logged_user.id, product_id: params[:id] || skipped_product_params[:product_id] }
+        pu_params = { user_id: logged_user.id, product_id: skipped_product_params[:product_id] }
         @product_user = ProductUser.find_by pu_params
         @product_user ||= ProductUser.create pu_params
         unless @product_user.persisted?

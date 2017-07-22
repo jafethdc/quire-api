@@ -6,7 +6,7 @@ module Api
       before_action :authenticate_with_token, only: [:destroy]
 
       def create
-        fb_profile = validate_fb_user(params[:fb_access_token])
+        fb_profile = fetch_fb_profile(params[:fb_access_token])
         user = User.find_by_email(fb_profile[:email])
         if user
           if user.update(update_params)

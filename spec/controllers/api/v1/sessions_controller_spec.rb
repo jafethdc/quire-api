@@ -8,19 +8,19 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
 
       context 'when successfully logged in' do
         it 'renders the json for the user including the access token' do
-          stub_validate_fb_user(Api::V1::SessionsController, true, email: user.email)
+          stub_fetch_fb_profile(Api::V1::SessionsController, true, email: user.email)
           post :create, params: { fb_access_token: '12345', user: { last_location: 'POINT (-78.00 12.3)' } }, format: :json
           expect(json_response[:access_token]).not_to be_nil
         end
 
         it 'responds with 200' do
-          stub_validate_fb_user(Api::V1::SessionsController, true, email: user.email)
+          stub_fetch_fb_profile(Api::V1::SessionsController, true, email: user.email)
           post :create, params: { fb_access_token: '12345', user: { last_location: 'POINT (-78.00 12.3)' } }, format: :json
           is_expected.to respond_with 200
         end
 
         it 'updates the fb access token' do
-          stub_validate_fb_user(Api::V1::SessionsController, true, email: user.email)
+          stub_fetch_fb_profile(Api::V1::SessionsController, true, email: user.email)
           post :create, params: { fb_access_token: '12345', user: { last_location: 'POINT (-78.00 12.3)' } }, format: :json
           expect(User.find_by(email: user.email).fb_access_token).to eq('12345')
         end
@@ -28,7 +28,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
 
       context 'when already logged in' do
         it 'regenerates the access token' do
-          stub_validate_fb_user(Api::V1::SessionsController, true, email: user.email)
+          stub_fetch_fb_profile(Api::V1::SessionsController, true, email: user.email)
           post :create, params: { fb_access_token: '12345', user: { last_location: 'POINT (-78.00 12.3)' } }, format: :json
           old_token = json_response[:access_token]
           post :create, params: { fb_access_token: '12345', user: { last_location: 'POINT (78.00 -12.3)' } }, format: :json
@@ -42,13 +42,13 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
 
       context 'when successfully logged in' do
         it 'renders the json for the just created user' do
-          stub_validate_fb_user(Api::V1::SessionsController, true, email: user_attributes[:email])
+          stub_fetch_fb_profile(Api::V1::SessionsController, true, email: user_attributes[:email])
           post :create, params: { fb_access_token: '12345', user: user_attributes.slice(:last_location) }, format: :json
           expect(json_response[:email]).to eql user_attributes[:email]
         end
 
         it 'renders the json for the user including the access token' do
-          stub_validate_fb_user(Api::V1::SessionsController, true, email: user_attributes[:email])
+          stub_fetch_fb_profile(Api::V1::SessionsController, true, email: user_attributes[:email])
           post :create, params: { fb_access_token: '12345', user: user_attributes.slice(:last_location) }, format: :json
           expect(json_response[:access_token]).not_to be_nil
         end
@@ -56,7 +56,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
 
       context 'when fb access token is invalid' do
         it 'responds with 422' do
-          stub_validate_fb_user(Api::V1::SessionsController, false)
+          stub_fetch_fb_profile(Api::V1::SessionsController, false)
           post :create, params: { fb_access_token: '12345', user: user_attributes.slice(:last_location) }, format: :json
           is_expected.to respond_with 422
         end
@@ -64,7 +64,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
 
       context 'when a parameter is not valid' do
         it 'responds with 422' do
-          stub_validate_fb_user(Api::V1::SessionsController, true, email: user_attributes[:email])
+          stub_fetch_fb_profile(Api::V1::SessionsController, true, email: user_attributes[:email])
           post :create, params: { fb_access_token: '12345', user: { last_location: 'location' } }, format: :json
           is_expected.to respond_with 422
         end
