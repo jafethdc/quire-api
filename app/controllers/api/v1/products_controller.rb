@@ -18,7 +18,7 @@ module Api
 
       def nearby
         serializer = ActiveModelSerializers::SerializableResource
-        nearby_products = logged_user.nearby_products.paginate(paginate_params).includes(:images)
+        nearby_products = logged_user.nearby_products.includes(:images).shuffle
         render json: serializer.new(nearby_products, scope: logged_user).as_json, status: 200
       end
 
