@@ -1,4 +1,7 @@
 require 'rails_helper'
+require File.join(Rails.root, 'spec', 'support', 'faker_helpers.rb')
+include Faker::ImageHelpers
+
 
 RSpec.describe Api::V1::ProductsController, type: :controller do
   let(:seller) { FactoryGirl.create(:logged_user, last_location: 'POINT (-26.243011 -61.846379)') }
@@ -196,6 +199,30 @@ RSpec.describe Api::V1::ProductsController, type: :controller do
         api_authorization_header(seller.access_token)
         patch :update, params: { user_id: seller.id, id: old_product.id, product: { name: 'producto1' } }
         is_expected.to respond_with 200
+      end
+    end
+
+    context 'when a _destroy parameter is sent withing an image' do
+      let(:product) { FactoryGirl.create(:product, seller_id: seller.id) }
+
+      it 'destroys the image' do
+        api_authorization_header(seller.access_token)
+        prev_images_len = product.images.size
+        product_params = { images_attributes: [{ id: product.images.first.id, _destroy: true }] }
+        patch :update, params: { user_id: seller.id, id: product.id, product: product_params }
+        expect(product.images.reload.size).to eq(prev_images_len - 1)
+      end
+    end
+
+    context 'when an image is passed without id' do
+      let(:product) { FactoryGirl.create(:product, seller_id: seller.id) }
+
+      it 'calls ProductImage#parse_image' do
+        api_authorization_header(seller.access_token)
+        prev_images_len = product.images.size
+        product_params = { images_attributes: [{ img_base: random_base64_image }] }
+        patch :update, params: { user_id: seller.id, id: product.id, product: product_params }
+        expect(product.images.reload.size).to eq(prev_images_len + 1)
       end
     end
   end

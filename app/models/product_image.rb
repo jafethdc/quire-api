@@ -1,5 +1,5 @@
 class ProductImage < ApplicationRecord
-  before_validation :parse_image, if: :new_record?
+  before_validation :parse_image, if: :should_parse?
 
   attr_accessor :img_base
 
@@ -15,5 +15,9 @@ class ProductImage < ApplicationRecord
   def parse_image
     # img is nil if img_base is nil
     self.img = Paperclip.io_adapters.for(img_base)
+  end
+
+  def should_parse?
+    img_base.present? || new_record?
   end
 end

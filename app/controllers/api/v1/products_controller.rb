@@ -55,7 +55,7 @@ module Api
       # Refactor this to have params for create and update...
       def product_params
         params.require(:product).permit(:name, :description, :price, :seller_id,
-                                        images_attributes: [:img_base])
+                                        images_attributes: [:id, :img_base, :_destroy])
       end
 
       def paginate_params

@@ -23,4 +23,16 @@ RSpec.describe ProductImage, type: :model do
       end
     end
   end
+
+  describe '#parse_image' do
+    let(:product_image) { FactoryGirl.build(:product_image) }
+
+    context 'when img_base is set' do
+      it 'is called on save' do
+        expect(product_image).to receive(:parse_image)
+        product_image.img_base = 'myballsbase64encoded'
+        product_image.save
+      end
+    end
+  end
 end

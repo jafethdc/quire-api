@@ -4,7 +4,7 @@ class Product < ApplicationRecord
   has_many :chats, inverse_of: :product
   has_many :product_users, inverse_of: :product
 
-  accepts_nested_attributes_for :images
+  accepts_nested_attributes_for :images, allow_destroy: true
 
   self.per_page = 10
 
