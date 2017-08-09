@@ -1,31 +1,72 @@
-# README
+# Quire API
+This is the API for the [Quire android app](https://github.com/narenkukreja/quire). 
 
-Quire is a tinder-like and ecommerce app for android. This is the API it consumes.
+## Documentation
+See the [Quire API documentation](http://jafethdiaz.me/quire-api-docs/#introduction)
 
-## Features
+## Set up
+```
+# Install dependencies
+bundle install
 
-* Log in with facebook
-* You are shown a list of products being offered for sale near your current location.
-* Swipe to the left if you want to pass or to the right if you want to initiate a conversation with the seller
-* Select the option *new listing item* to publish your own product, providing images and some basic info, in a flash! 
+# Make sure you have postgis installed
+# Modify database, username and password in config/database.yml according to your needs
 
-![alt tag](http://i.imgur.com/rcvHLrX.png)
+rake db:create
+rake db:migrate
 
-## Technologies used
+# Set the environment variables listed below
+(optional) rake db:seed
+```
 
-### API
+## Environment variables
+* AWS_ACCESS_KEY_ID
+* AWS_SECRET_ACCESS_KEY
+* S3_BUCKET_NAME
+* AWS_REGION
 
-* Ruby on Rails
-* Postgresql + Postgis
-* Amazon S3
-* Facebook API
+* FB_APP_ID
+* FB_SECRET
 
-### App
+* SENDBIRD_API_TOKEN
 
-* Android SDK
-* Sendbird SDK
-* Facebook API
+## Test
 
-### To do
+```
+  rspec spec/
+```
 
-* Show first in the list of products those that belong to friends of your friends in facebook!
+## Contributing
+
+### Issues
+
+In any project it's likely that a few bugs will slip through the cracks, so it
+helps greatly if people document any bugs they find to ensure that they get
+fixed promptly.
+
+You can view a list of known issues and feature requests using [the issue tracker](
+https://github.com/narenkukreja/quire/issues). If you don't see your issue (or you
+aren't sure) feel free to [submit it!](https://github.com/narenkukreja/quire/issues)
+
+Where appropriate, a screenshot works wonders to help us see exactly what the
+issue is. You can upload screenshots directly using the GitHub issue tracker or
+by attaching a link (to Imgur, for example), whichever is easier for you.
+
+### Code
+
+If you are a developer and wish to contribute to the app please fork the project
+and submit a pull request.
+
+## Team
+
+[![Naren Kukreja](https://avatars2.githubusercontent.com/u/10284862?v=3&s=144)](https://github.com/narenkukreja)  | 
+[![Jafeth Díaz](https://avatars1.githubusercontent.com/u/7109853?v=3&s=144)](https://github.com/JafethDC)
+---|---
+[Naren Kukreja](https://github.com/narenkukreja) |[Jafeth Díaz](https://github.com/JafethDC)
+
+## Licensing
+
+Quire is licensed under the [MIT LICENSE.](LICENSE)
+
+In addition to the terms set by the MIT LICENSE, I ask that if you use
+any code from this repository that you send me a message to let me know.
